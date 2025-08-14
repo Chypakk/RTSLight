@@ -56,7 +56,7 @@ public class Castle {
 
     public void printGenerators() {
         synchronized (generators) {
-            if (resources.isEmpty()) {
+            if (generators.isEmpty()) {
                 System.out.println("Генераторов пока нет");
                 return;
             }
@@ -85,6 +85,16 @@ public class Castle {
         }
     }
 
+    public void stopAllGenerators() {
+        synchronized (generators) {
+            for (ResourceGenerator generator : generators) {
+                generator.stopGenerator();
+            }
+        }
+        System.out.println("Все генераторы остановлены");
+    }
+
+    //todo реализовать систему юнитов
     public void addUnit(Unit unit) {
         synchronized (units) {
             units.add(unit);
@@ -98,7 +108,16 @@ public class Castle {
     }
 
     public void printUnits() {
-
+        synchronized (units){
+            if (units.isEmpty()) {
+                System.out.println("Юнитов пока нет");
+                return;
+            }
+            System.out.println("\nЮниты:");
+            for (Unit unit : units) {
+                System.out.println(unit);
+            }
+        }
     }
 
     public List<Unit> getUnits() {
