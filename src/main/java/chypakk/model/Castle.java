@@ -2,7 +2,7 @@ package chypakk.model;
 
 import chypakk.model.resources.generator.ResourceGenerator;
 import chypakk.model.resources.Resource;
-import org.chypakk.model.units.Unit;
+import chypakk.model.units.Unit;
 
 import java.util.List;
 import java.util.Map;
