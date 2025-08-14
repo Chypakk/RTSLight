@@ -1,4 +1,4 @@
-package org.chypakk.model.resources;
+package chypakk.model.resources;
 
 public class Resource {
     private final String type;

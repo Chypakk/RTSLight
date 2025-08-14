@@ -1,7 +1,7 @@
-package org.chypakk.model.resources.generator;
+package chypakk.model.resources.generator;
 
-import org.chypakk.model.Castle;
-import org.chypakk.model.resources.Gold;
+import chypakk.model.Castle;
+import chypakk.model.resources.Gold;
 
 import java.util.concurrent.TimeUnit;
 

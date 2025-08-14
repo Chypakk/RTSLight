@@ -1,9 +1,9 @@
-package org.chypakk;
+package chypakk;
 
-import org.chypakk.model.Castle;
-import org.chypakk.model.resources.generator.Forest;
-import org.chypakk.model.resources.generator.GoldMine;
-import org.chypakk.model.resources.generator.ResourceGenerator;
+import chypakk.model.Castle;
+import chypakk.model.resources.generator.Forest;
+import chypakk.model.resources.generator.GoldMine;
+import chypakk.model.resources.generator.ResourceGenerator;
 
 import java.util.Scanner;
 

@@ -1,4 +1,4 @@
-package org.chypakk.model.resources;
+package chypakk.model.resources;
 
 public class Gold extends Resource {
     public Gold(int amount) {

@@ -1,7 +1,7 @@
-package org.chypakk.model;
+package chypakk.model;
 
-import org.chypakk.model.resources.Resource;
-import org.chypakk.model.resources.generator.ResourceGenerator;
+import chypakk.model.resources.generator.ResourceGenerator;
+import chypakk.model.resources.Resource;
 import org.chypakk.model.units.Unit;
 
 import java.util.List;
@@ -54,8 +54,8 @@ public class Castle {
         }
     }
 
-    public void printGenerators(){
-        synchronized (generators){
+    public void printGenerators() {
+        synchronized (generators) {
             if (resources.isEmpty()) {
                 System.out.println("Генераторов пока нет");
                 return;
@@ -85,19 +85,19 @@ public class Castle {
         }
     }
 
-    public void addUnit(Unit unit){
-        synchronized (units){
+    public void addUnit(Unit unit) {
+        synchronized (units) {
             units.add(unit);
         }
     }
 
-    public void removeUnit(Unit unit){
-        synchronized (units){
+    public void removeUnit(Unit unit) {
+        synchronized (units) {
             units.remove(unit);
         }
     }
 
-    public void printUnits(){
+    public void printUnits() {
 
     }
 

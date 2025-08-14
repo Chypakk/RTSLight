@@ -1,6 +1,6 @@
-package org.chypakk.model.resources.generator;
+package chypakk.model.resources.generator;
 
-import org.chypakk.model.Castle;
+import chypakk.model.Castle;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

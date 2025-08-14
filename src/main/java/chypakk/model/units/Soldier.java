@@ -1,6 +1,6 @@
-package org.chypakk.model.units;
+package chypakk.model.units;
 
-import org.chypakk.model.strategy.MeleeStrategy;
+import chypakk.model.strategy.MeleeStrategy;
 
 public class Soldier extends Unit {
     public Soldier(String name, int health, int baseDamage) {

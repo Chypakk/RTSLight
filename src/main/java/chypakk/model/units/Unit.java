@@ -1,6 +1,6 @@
-package org.chypakk.model.units;
+        package chypakk.model.units;
 
-import org.chypakk.model.strategy.AttackStrategy;
+import chypakk.model.strategy.AttackStrategy;
 
 public abstract class Unit {
     private final String name;

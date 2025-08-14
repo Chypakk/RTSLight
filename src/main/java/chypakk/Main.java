@@ -1,4 +1,4 @@
-package org.chypakk;
+package chypakk;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException {
