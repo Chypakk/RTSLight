@@ -1,4 +1,4 @@
-package chypakk.command;
+package chypakk.composite.command;
 
 import chypakk.model.Castle;
 

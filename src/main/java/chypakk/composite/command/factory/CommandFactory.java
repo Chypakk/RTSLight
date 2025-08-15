@@ -1,6 +1,6 @@
-package chypakk.command.factory;
+package chypakk.composite.command.factory;
 
-import chypakk.command.*;
+import chypakk.composite.command.*;
 
 import java.util.HashMap;
 import java.util.Map;
