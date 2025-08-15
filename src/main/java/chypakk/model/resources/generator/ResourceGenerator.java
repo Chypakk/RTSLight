@@ -6,6 +6,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 
+//todo добавить стоимость
 public abstract class ResourceGenerator {
     protected final int interval;
     protected final int amountPerInterval;

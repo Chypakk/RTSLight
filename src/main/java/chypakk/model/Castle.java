@@ -1,11 +1,13 @@
 package chypakk.model;
 
+import chypakk.model.building.Building;
 import chypakk.model.resources.generator.ResourceGenerator;
 import chypakk.model.resources.Resource;
 import chypakk.model.units.Unit;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -14,11 +16,13 @@ public class Castle {
     private final Map<String, Resource> resources = new ConcurrentHashMap<>();
     private final List<ResourceGenerator> generators = new CopyOnWriteArrayList<>();
     private final List<Unit> units = new CopyOnWriteArrayList<>();
+    private final Set<Building> buildings = ConcurrentHashMap.newKeySet();
 
     public Castle(int health) {
         this.health = health;
     }
 
+    //todo сделать enum для ресурсов, чтобы не писать везде строки
     public void addResource(Resource res) {
         synchronized (resources) {
             Resource existing = resources.get(res.getType());
@@ -74,9 +78,9 @@ public class Castle {
     public void addGenerator(ResourceGenerator generator) {
         synchronized (generators) {
             generators.add(generator);
+            generator.startGenerator();
+            System.out.println("Генератор " + generator.getClass().getSimpleName() + " добавлен!");
         }
-        generator.startGenerator();
-        System.out.println("Генератор " + generator.getClass().getSimpleName() + " добавлен!");
     }
 
     public void removeGenerator(ResourceGenerator generator) {
@@ -92,6 +96,30 @@ public class Castle {
             }
         }
         System.out.println("Все генераторы остановлены");
+    }
+
+    public void addBuilding(Building building){
+        synchronized (buildings){
+            buildings.add(building);
+        }
+    }
+
+    public boolean haveBuilding(String name){
+        Building neededBuilding =  buildings.stream().filter(build -> build.getName().equals(name)).findFirst().orElse(null);
+        return neededBuilding != null;
+    }
+
+    public void printBuildings(){
+        synchronized (buildings) {
+            if (buildings.isEmpty()) {
+                System.out.println("Зданий пока нет");
+                return;
+            }
+            System.out.println("\nЗдания:");
+            for (Building gen : buildings) {
+                System.out.println("- " + gen.getClass().getSimpleName());
+            }
+        }
     }
 
     //todo реализовать систему юнитов
