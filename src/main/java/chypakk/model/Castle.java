@@ -7,6 +7,8 @@ import chypakk.model.resources.Resource;
 import chypakk.model.units.Unit;
 import chypakk.observer.GameObservable;
 import chypakk.observer.GameObserver;
+import chypakk.observer.event.GameEvent;
+import chypakk.observer.event.GeneratorEvent;
 
 import java.util.List;
 import java.util.Map;
@@ -88,8 +90,12 @@ public class Castle implements GameObservable {
             generators.add(generator);
             generator.startGenerator();
 
-            notifyObservers();
-            sendMessage("Добавлен генератор: " + generator.getClass().getSimpleName());
+            //notifyObservers();
+            notifyObservers(new GeneratorEvent(
+                    generator.getClass().getSimpleName(),
+                    GeneratorEvent.Action.ADDED
+            ));
+            //sendMessage("Добавлен генератор: " + generator.getClass().getSimpleName());
         }
     }
 
@@ -207,6 +213,13 @@ public class Castle implements GameObservable {
             for (GameObserver observer : observers) {
                 observer.onGameStateChanged(state);
             }
+        }
+    }
+
+    @Override
+    public void notifyObservers(GameEvent event) {
+        for (GameObserver observer : observers) {
+            observer.onEvent(event);
         }
     }
 

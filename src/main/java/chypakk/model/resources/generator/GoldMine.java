@@ -29,7 +29,7 @@ public class GoldMine extends ResourceGenerator{
                 stopGenerator();
             }
 
-        }, 0, interval, TimeUnit.MILLISECONDS);
+        }, 0, interval, TimeUnit.SECONDS);
     }
 
     @Override

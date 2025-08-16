@@ -28,4 +28,5 @@ public class ConsoleUI extends GameUI {
         System.out.println("Здания: " + state.buildings());
         System.out.println("============================\n");
     }
+
 }
