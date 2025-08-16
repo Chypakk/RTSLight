@@ -1,15 +1,15 @@
 package chypakk.model.resources;
 
 public class Resource {
-    private final String type;
+    private final ResourceType type;
     protected int amount;
 
-    public Resource(String type, int amount) {
+    public Resource(ResourceType type, int amount) {
         this.type = type;
         this.amount = amount;
     }
 
-    public String getType(){
+    public ResourceType getType(){
         return type;
     }
 

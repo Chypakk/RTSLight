@@ -4,6 +4,7 @@ import chypakk.composite.MenuSystem;
 import chypakk.model.Castle;
 import chypakk.model.resources.generator.Forest;
 import chypakk.model.resources.generator.GoldMine;
+import chypakk.ui.ConsoleUI;
 
 //todo переписать на lanterna
 //todo внедрить паттерн Observer и убрать консольные выводы
@@ -12,9 +13,11 @@ import chypakk.model.resources.generator.GoldMine;
 public class GameEngine {
 
     private final Castle castle;
+    private final MenuSystem menuSystem;
 
     public GameEngine() {
         this.castle = new Castle(100);
+        this.menuSystem = new MenuSystem(castle);
     }
 
     public void start() {
@@ -24,7 +27,8 @@ public class GameEngine {
         castle.addGenerator(goldMine);
         castle.addGenerator(forest);
 
-        new MenuSystem(castle).start();
-    }
+        ConsoleUI consoleUI = new ConsoleUI(castle, menuSystem);
+        consoleUI.start();
 
+    }
 }

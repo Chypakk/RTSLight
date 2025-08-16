@@ -2,7 +2,7 @@ package chypakk.model.resources;
 
 public class Gold extends Resource {
     public Gold(int amount) {
-        super("gold", amount);
+        super(ResourceType.GOLD, amount);
     }
 
     @Override

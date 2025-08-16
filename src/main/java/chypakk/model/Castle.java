@@ -1,9 +1,12 @@
 package chypakk.model;
 
 import chypakk.model.building.Building;
+import chypakk.model.resources.ResourceType;
 import chypakk.model.resources.generator.ResourceGenerator;
 import chypakk.model.resources.Resource;
 import chypakk.model.units.Unit;
+import chypakk.observer.GameObservable;
+import chypakk.observer.GameObserver;
 
 import java.util.List;
 import java.util.Map;
@@ -11,18 +14,19 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Castle {
+public class Castle implements GameObservable {
     private int health;
-    private final Map<String, Resource> resources = new ConcurrentHashMap<>();
+    private final Map<ResourceType, Resource> resources = new ConcurrentHashMap<>();
     private final List<ResourceGenerator> generators = new CopyOnWriteArrayList<>();
     private final List<Unit> units = new CopyOnWriteArrayList<>();
     private final Set<Building> buildings = ConcurrentHashMap.newKeySet();
+
+    private final List<GameObserver> observers = new CopyOnWriteArrayList<>();
 
     public Castle(int health) {
         this.health = health;
     }
 
-    //todo сделать enum для ресурсов, чтобы не писать везде строки
     public void addResource(Resource res) {
         synchronized (resources) {
             Resource existing = resources.get(res.getType());
@@ -31,16 +35,20 @@ public class Castle {
             } else {
                 resources.put(res.getType(), res);
             }
+
+            notifyObservers();
+            sendMessage("Добавлен ресурс: " + res.getType());
         }
     }
 
-    public void removeResource(String type, int amount) {
+    //todo добавить observer
+    public void removeResource(ResourceType type, int amount) {
         synchronized (resources) {
             resources.get(type).removeAmount(amount);
         }
     }
 
-    public int getResource(String type) {
+    public int getResource(ResourceType type) {
         synchronized (resources) {
             return resources.get(type).getAmount();
         }
@@ -79,10 +87,13 @@ public class Castle {
         synchronized (generators) {
             generators.add(generator);
             generator.startGenerator();
-            System.out.println("Генератор " + generator.getClass().getSimpleName() + " добавлен!");
+
+            notifyObservers();
+            sendMessage("Добавлен генератор: " + generator.getClass().getSimpleName());
         }
     }
 
+    //todo добавить observer
     public void removeGenerator(ResourceGenerator generator) {
         synchronized (generators) {
             generators.remove(generator);
@@ -98,18 +109,21 @@ public class Castle {
         System.out.println("Все генераторы остановлены");
     }
 
-    public void addBuilding(Building building){
-        synchronized (buildings){
+    public void addBuilding(Building building) {
+        synchronized (buildings) {
             buildings.add(building);
+
+            notifyObservers();
+            sendMessage("Построено здание: " + building.getName());
         }
     }
 
-    public boolean haveBuilding(String name){
-        Building neededBuilding =  buildings.stream().filter(build -> build.getName().equals(name)).findFirst().orElse(null);
+    public boolean haveBuilding(String name) {
+        Building neededBuilding = buildings.stream().filter(build -> build.getName().equals(name)).findFirst().orElse(null);
         return neededBuilding != null;
     }
 
-    public void printBuildings(){
+    public void printBuildings() {
         synchronized (buildings) {
             if (buildings.isEmpty()) {
                 System.out.println("Зданий пока нет");
@@ -123,12 +137,14 @@ public class Castle {
     }
 
     //todo реализовать систему юнитов
+    //todo добавить observer
     public void addUnit(Unit unit) {
         synchronized (units) {
             units.add(unit);
         }
     }
 
+    //todo добавить observer
     public void removeUnit(Unit unit) {
         synchronized (units) {
             units.remove(unit);
@@ -136,7 +152,7 @@ public class Castle {
     }
 
     public void printUnits() {
-        synchronized (units){
+        synchronized (units) {
             if (units.isEmpty()) {
                 System.out.println("Юнитов пока нет");
                 return;
@@ -164,5 +180,41 @@ public class Castle {
         return health >= 0;
     }
 
+    @Override
+    public void addObserver(GameObserver observer) {
+        synchronized (observers) {
+            observers.add(observer);
+            notifyObservers();
+        }
+    }
 
+    @Override
+    public void removeObserver(GameObserver observer) {
+        synchronized (observers) {
+            observers.remove(observer);
+        }
+    }
+
+    @Override
+    public void notifyObservers() {
+        GameState state = new GameState(
+                resources,
+                generators.stream().map(g -> g.getClass().getSimpleName()).toList(),
+                buildings.stream().map(Building::getName).toList()
+        );
+
+        synchronized (observers) {
+            for (GameObserver observer : observers) {
+                observer.onGameStateChanged(state);
+            }
+        }
+    }
+
+    public void sendMessage(String message) {
+        synchronized (observers) {
+            for (GameObserver observer : observers) {
+                observer.onMessage(message);
+            }
+        }
+    }
 }
