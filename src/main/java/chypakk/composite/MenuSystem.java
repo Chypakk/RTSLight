@@ -2,20 +2,23 @@ package chypakk.composite;
 
 import chypakk.composite.command.*;
 import chypakk.model.Castle;
+import chypakk.ui.MenuRender;
 
 import static chypakk.model.resources.ResourceType.GOLD;
 import static chypakk.model.resources.ResourceType.WOOD;
 
 public class MenuSystem {
     private final Castle castle;
+    private final MenuRender renderer;
 
-    public MenuSystem(Castle castle) {
+    public MenuSystem(Castle castle, MenuRender renderer) {
         this.castle = castle;
+        this.renderer = renderer;
     }
 
     private MenuComponent buildRootMenu() {
 
-        MenuGroup rootMenu = new MenuGroup("Главное меню");
+        MenuGroup rootMenu = new MenuGroup("Главное меню", renderer);
         rootMenu.addItem(1, buildConstructMenu());
         rootMenu.addItem(2, buildUseBuildingMenu());
         rootMenu.addItem(3, buildReportsMenu());
@@ -25,14 +28,14 @@ public class MenuSystem {
     }
 
     private MenuComponent buildConstructMenu() {
-        MenuGroup generatorsMenu = new MenuGroup("Генераторы");
+        MenuGroup generatorsMenu = new MenuGroup("Генераторы", renderer);
         generatorsMenu.addItem(1, new CommandLeaf("Добавить золотую шахту (50 золота, 60 дерева)", new AddGoldMineCommand()));
         generatorsMenu.addItem(2, new CommandLeaf("Добавить лес (70 дерева)", new AddForestCommand()));
 
-        MenuGroup construction = new MenuGroup("Здания");
+        MenuGroup construction = new MenuGroup("Здания", renderer);
         construction.addItem(1, new CommandLeaf("Добавить рынок (10 золота, 20 дерева)", new AddMarketplaceCommand()));
 
-        MenuGroup buildMenu = new MenuGroup("Построить");
+        MenuGroup buildMenu = new MenuGroup("Построить", renderer);
         buildMenu.addItem(1, generatorsMenu);
         buildMenu.addItem(2, construction);
 
@@ -40,9 +43,9 @@ public class MenuSystem {
     }
 
     private MenuComponent buildUseBuildingMenu(){
-        MenuGroup buildingsUseMenu = new MenuGroup("Использовать");
+        MenuGroup buildingsUseMenu = new MenuGroup("Использовать", renderer);
 
-        MenuGroup marketMenu = new MenuGroup("Рынок");
+        MenuGroup marketMenu = new MenuGroup("Рынок", renderer);
 
         marketMenu.addItem(1, new CommandLeaf("Обменять 10 дерева на 5 золота", new ExchangeResourceCommand(WOOD, 10, GOLD, 5)));
         marketMenu.addItem(2, new CommandLeaf("Обменять 5 золота на 10 дерева", new ExchangeResourceCommand(GOLD, 5, WOOD, 10)));
@@ -52,7 +55,7 @@ public class MenuSystem {
     }
 
     private MenuComponent buildReportsMenu(){
-        MenuGroup reportsMenu = new MenuGroup("Отчеты");
+        MenuGroup reportsMenu = new MenuGroup("Отчеты", renderer);
         reportsMenu.addItem(1, new CommandLeaf("Ресурсы", new ShowResourcesCommand()));
         reportsMenu.addItem(2, new CommandLeaf("Генераторы", new ShowGeneratorsCommand()));
         reportsMenu.addItem(3, new CommandLeaf("Здания", new ShowBuildingsCommand()));

@@ -1,10 +1,12 @@
 package chypakk;
 
-import chypakk.composite.MenuSystem;
 import chypakk.model.Castle;
 import chypakk.model.resources.generator.Forest;
 import chypakk.model.resources.generator.GoldMine;
 import chypakk.ui.ConsoleUI;
+import chypakk.ui.LanternaUI;
+
+import java.io.IOException;
 
 //todo переписать на lanterna
 //todo внедрить паттерн Observer и убрать консольные выводы
@@ -13,11 +15,11 @@ import chypakk.ui.ConsoleUI;
 public class GameEngine {
 
     private final Castle castle;
-    private final MenuSystem menuSystem;
+    private final ConsoleUI consoleUI;
 
     public GameEngine() {
         this.castle = new Castle(100);
-        this.menuSystem = new MenuSystem(castle);
+        this.consoleUI = new ConsoleUI(castle);
     }
 
     public void start() {
@@ -27,8 +29,13 @@ public class GameEngine {
         castle.addGenerator(goldMine);
         castle.addGenerator(forest);
 
-        ConsoleUI consoleUI = new ConsoleUI(castle, menuSystem);
         consoleUI.start();
+
+//        try {
+//            new LanternaUI(castle, menuSystem).start();
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
 
     }
 }

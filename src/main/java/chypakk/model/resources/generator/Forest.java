@@ -20,7 +20,7 @@ public class Forest extends ResourceGenerator {
             //System.out.printf("[Лес] Добавлено %d дерева (осталось: %d)\n", amountPerInterval, totalAmount.get());
 
             if (totalAmount.get() == amountPerInterval * 3){
-                castle.sendMessage("Лес вырублен");
+                castle.sendMessage("Лес скоро иссякнет");
                 //System.out.println("Лес скоро иссякнет");
             }
 

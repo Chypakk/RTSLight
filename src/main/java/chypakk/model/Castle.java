@@ -7,8 +7,7 @@ import chypakk.model.resources.Resource;
 import chypakk.model.units.Unit;
 import chypakk.observer.GameObservable;
 import chypakk.observer.GameObserver;
-import chypakk.observer.event.GameEvent;
-import chypakk.observer.event.GeneratorEvent;
+import chypakk.observer.event.*;
 
 import java.util.List;
 import java.util.Map;
@@ -38,15 +37,19 @@ public class Castle implements GameObservable {
                 resources.put(res.getType(), res);
             }
 
-            notifyObservers();
-            sendMessage("Добавлен ресурс: " + res.getType());
+            notifyObservers(new ResourceEvent(
+                    res.getType().name(), Action.ADDED, res.getAmount()
+            ));
         }
     }
 
-    //todo добавить observer
     public void removeResource(ResourceType type, int amount) {
         synchronized (resources) {
             resources.get(type).removeAmount(amount);
+
+            notifyObservers(new ResourceEvent(
+                    type.name(), Action.REMOVED, amount
+            ));
         }
     }
 
@@ -90,19 +93,21 @@ public class Castle implements GameObservable {
             generators.add(generator);
             generator.startGenerator();
 
-            //notifyObservers();
             notifyObservers(new GeneratorEvent(
                     generator.getClass().getSimpleName(),
-                    GeneratorEvent.Action.ADDED
+                    Action.ADDED
             ));
-            //sendMessage("Добавлен генератор: " + generator.getClass().getSimpleName());
         }
     }
 
-    //todo добавить observer
     public void removeGenerator(ResourceGenerator generator) {
         synchronized (generators) {
             generators.remove(generator);
+
+            notifyObservers(new GeneratorEvent(
+                    generator.getClass().getSimpleName(),
+                    Action.REMOVED
+            ));
         }
     }
 
@@ -119,8 +124,10 @@ public class Castle implements GameObservable {
         synchronized (buildings) {
             buildings.add(building);
 
-            notifyObservers();
-            sendMessage("Построено здание: " + building.getName());
+            notifyObservers(new BuildingEvent(
+                    building.getName(), Action.ADDED
+            ));
+
         }
     }
 
@@ -190,7 +197,6 @@ public class Castle implements GameObservable {
     public void addObserver(GameObserver observer) {
         synchronized (observers) {
             observers.add(observer);
-            notifyObservers();
         }
     }
 
@@ -198,21 +204,6 @@ public class Castle implements GameObservable {
     public void removeObserver(GameObserver observer) {
         synchronized (observers) {
             observers.remove(observer);
-        }
-    }
-
-    @Override
-    public void notifyObservers() {
-        GameState state = new GameState(
-                resources,
-                generators.stream().map(g -> g.getClass().getSimpleName()).toList(),
-                buildings.stream().map(Building::getName).toList()
-        );
-
-        synchronized (observers) {
-            for (GameObserver observer : observers) {
-                observer.onGameStateChanged(state);
-            }
         }
     }
 
