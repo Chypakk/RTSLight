@@ -84,8 +84,8 @@ public class Castle implements GameObservable {
         }
     }
 
-    public List<ResourceGenerator> getGenerators() {
-        return generators;
+    public List<ResourceGenerator> getGenerators(String type) {
+        return generators.stream().filter(generator -> generator.getClass().getSimpleName().equals(type)).toList();
     }
 
     public void addGenerator(ResourceGenerator generator) {

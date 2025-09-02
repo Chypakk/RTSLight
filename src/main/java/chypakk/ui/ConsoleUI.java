@@ -21,6 +21,7 @@ public class ConsoleUI implements GameUI {
         castle.addObserver(this);
     }
 
+    @Override
     public void start() {
         while (castle.isAlive()) {
             menuSystem.start();

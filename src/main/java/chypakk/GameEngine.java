@@ -4,6 +4,7 @@ import chypakk.model.Castle;
 import chypakk.model.resources.generator.Forest;
 import chypakk.model.resources.generator.GoldMine;
 import chypakk.ui.ConsoleUI;
+import chypakk.ui.GameUI;
 import chypakk.ui.LanternaUI;
 
 import java.io.IOException;
@@ -15,11 +16,15 @@ import java.io.IOException;
 public class GameEngine {
 
     private final Castle castle;
-    private final ConsoleUI consoleUI;
+    private final GameUI gameUI;
 
     public GameEngine() {
         this.castle = new Castle(100);
-        this.consoleUI = new ConsoleUI(castle);
+        try {
+            this.gameUI = new LanternaUI(castle);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void start() {
@@ -29,13 +34,6 @@ public class GameEngine {
         castle.addGenerator(goldMine);
         castle.addGenerator(forest);
 
-        consoleUI.start();
-
-//        try {
-//            new LanternaUI(castle, menuSystem).start();
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-
+        gameUI.start();
     }
 }
