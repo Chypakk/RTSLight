@@ -29,7 +29,7 @@ public class MenuSystem {
 
     private MenuComponent buildConstructMenu() {
         MenuGroup generatorsMenu = new MenuGroup("Генераторы", renderer);
-        generatorsMenu.addItem(1, new CommandLeaf("Добавить золотую шахту (50 золота, 60 дерева)", new AddGoldMineCommand()));
+        generatorsMenu.addItem(1, new CommandLeaf("Добавить шахту (50 золота, 60 дерева)", new AddGoldMineCommand()));
         generatorsMenu.addItem(2, new CommandLeaf("Добавить лес (70 дерева)", new AddForestCommand()));
 
         MenuGroup construction = new MenuGroup("Здания", renderer);
@@ -63,7 +63,6 @@ public class MenuSystem {
         return reportsMenu;
     }
 
-    //todo внедрить создание юнитов
     public void start() {
         MenuComponent rootMenu = buildRootMenu();
         while (castle.isAlive()) {

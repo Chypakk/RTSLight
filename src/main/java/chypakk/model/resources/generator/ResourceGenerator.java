@@ -12,6 +12,7 @@ public abstract class ResourceGenerator {
     protected final int amountPerInterval;
     protected final Castle castle;
     protected final ScheduledExecutorService executor;
+    protected Status status;
 
     protected AtomicInteger totalAmount;
 
@@ -21,12 +22,21 @@ public abstract class ResourceGenerator {
         this.interval = interval;
         this.executor = Executors.newSingleThreadScheduledExecutor();
         this.totalAmount = new AtomicInteger(totalAmount);
+        this.status = Status.RUN;
     }
 
     public abstract void startGenerator();
-    public abstract void stopGenerator();
 
-    public int getAmount(){
+    public void stopGenerator(){
+        executor.shutdownNow();
+        castle.removeGenerator(this);
+    }
+
+    public int getAmount() {
         return totalAmount.get();
+    }
+
+    public Status getStatus() {
+        return status;
     }
 }

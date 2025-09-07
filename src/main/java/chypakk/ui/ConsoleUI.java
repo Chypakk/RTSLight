@@ -57,16 +57,6 @@ public class ConsoleUI implements GameUI {
     }
 
     @Override
-    public void initialize() {
-
-    }
-
-    @Override
-    public void shutdown() {
-
-    }
-
-    @Override
     public void displayMenu(String title, Map<Integer, String> options) {
         System.out.println("\n" + title + ":");
         options.forEach((key, value) -> System.out.println(key + " - " + value));

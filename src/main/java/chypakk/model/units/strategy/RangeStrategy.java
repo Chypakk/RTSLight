@@ -1,4 +1,4 @@
-package chypakk.model.strategy;
+package chypakk.model.units.strategy;
 
 public class RangeStrategy implements AttackStrategy{
     private final double CRIT_CHANCE = 0.5;

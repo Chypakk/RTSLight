@@ -3,14 +3,10 @@ package chypakk;
 import chypakk.model.Castle;
 import chypakk.model.resources.generator.Forest;
 import chypakk.model.resources.generator.GoldMine;
-import chypakk.ui.ConsoleUI;
 import chypakk.ui.GameUI;
 import chypakk.ui.LanternaUI;
 
 import java.io.IOException;
-
-//todo переписать на lanterna
-//todo внедрить паттерн Observer и убрать консольные выводы
 
 //todo написать про паттерны в Obsidian
 public class GameEngine {

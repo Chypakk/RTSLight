@@ -1,6 +1,6 @@
 package chypakk.model.units;
 
-import chypakk.model.strategy.RangeStrategy;
+import chypakk.model.units.strategy.RangeStrategy;
 
 public class Archer extends Unit{
     public Archer(String name, int health, int baseDamage) {

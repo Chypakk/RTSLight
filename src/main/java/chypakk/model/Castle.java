@@ -4,14 +4,13 @@ import chypakk.model.building.Building;
 import chypakk.model.resources.ResourceType;
 import chypakk.model.resources.generator.ResourceGenerator;
 import chypakk.model.resources.Resource;
+import chypakk.model.resources.generator.Status;
 import chypakk.model.units.Unit;
 import chypakk.observer.GameObservable;
 import chypakk.observer.GameObserver;
 import chypakk.observer.event.*;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -23,6 +22,15 @@ public class Castle implements GameObservable {
     private final Set<Building> buildings = ConcurrentHashMap.newKeySet();
 
     private final List<GameObserver> observers = new CopyOnWriteArrayList<>();
+
+    private final List<GeneratorDisplayConfig> generatorDisplayConfigs = Arrays.asList(
+            new GeneratorDisplayConfig("GoldMine", "шахт", 1),
+            new GeneratorDisplayConfig("Forest", "лесов", 2)
+    );
+    private final List<ResourceDisplayConfig> resourceDisplayConfigs = Arrays.asList(
+            new ResourceDisplayConfig("GOLD", "золото", 1),
+            new ResourceDisplayConfig("WOOD", "дерево", 2)
+    );
 
     public Castle(int health) {
         this.health = health;
@@ -55,7 +63,8 @@ public class Castle implements GameObservable {
 
     public int getResource(ResourceType type) {
         synchronized (resources) {
-            return resources.get(type).getAmount();
+            Resource resource = resources.get(type);
+            return resource != null ? resource.getAmount() : 0;
         }
     }
 
@@ -86,6 +95,12 @@ public class Castle implements GameObservable {
 
     public List<ResourceGenerator> getGenerators(String type) {
         return generators.stream().filter(generator -> generator.getClass().getSimpleName().equals(type)).toList();
+    }
+
+    public int getAlmostRemovedCount(String generatorType) {
+        return generators.stream().filter(generator ->
+                generator.getStatus() == Status.ALMOST_REMOVED && generator.getClass().getSimpleName().equals(generatorType)
+        ).toList().size();
     }
 
     public void addGenerator(ResourceGenerator generator) {
@@ -149,45 +164,45 @@ public class Castle implements GameObservable {
         }
     }
 
-    //todo реализовать систему юнитов
-    //todo добавить observer
-    public void addUnit(Unit unit) {
-        synchronized (units) {
-            units.add(unit);
-        }
-    }
-
-    //todo добавить observer
-    public void removeUnit(Unit unit) {
-        synchronized (units) {
-            units.remove(unit);
-        }
-    }
-
-    public void printUnits() {
-        synchronized (units) {
-            if (units.isEmpty()) {
-                System.out.println("Юнитов пока нет");
-                return;
-            }
-            System.out.println("\nЮниты:");
-            for (Unit unit : units) {
-                System.out.println(unit);
-            }
-        }
-    }
-
-    public List<Unit> getUnits() {
-        return units;
-    }
-
-    public int getHealth() {
-        return health;
-    }
-
-    public void takeDamage(int damage) {
-        this.health -= damage;
-    }
+//    //todo реализовать систему юнитов
+//    //todo добавить observer
+//    public void addUnit(Unit unit) {
+//        synchronized (units) {
+//            units.add(unit);
+//        }
+//    }
+//
+//    //todo добавить observer
+//    public void removeUnit(Unit unit) {
+//        synchronized (units) {
+//            units.remove(unit);
+//        }
+//    }
+//
+//    public void printUnits() {
+//        synchronized (units) {
+//            if (units.isEmpty()) {
+//                System.out.println("Юнитов пока нет");
+//                return;
+//            }
+//            System.out.println("\nЮниты:");
+//            for (Unit unit : units) {
+//                System.out.println(unit);
+//            }
+//        }
+//    }
+//
+//    public List<Unit> getUnits() {
+//        return units;
+//    }
+//
+//    public int getHealth() {
+//        return health;
+//    }
+//
+//    public void takeDamage(int damage) {
+//        this.health -= damage;
+//    }
 
     public boolean isAlive() {
         return health >= 0;
@@ -220,5 +235,13 @@ public class Castle implements GameObservable {
                 observer.onMessage(message);
             }
         }
+    }
+
+    public List<GeneratorDisplayConfig> getGeneratorDisplayConfigs() {
+        return generatorDisplayConfigs;
+    }
+
+    public List<ResourceDisplayConfig> getResourceDisplayConfigs(){
+        return resourceDisplayConfigs;
     }
 }

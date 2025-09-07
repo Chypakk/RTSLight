@@ -35,6 +35,7 @@ public class MenuGroup implements MenuComponent{
             int choice = renderer.getChoice(options);
 
             if (choice == 0 && !title.equals("Главное меню")) {
+                renderer.displayMenu(title, options);
                 break;
             }
 

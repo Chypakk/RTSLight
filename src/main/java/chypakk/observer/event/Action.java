@@ -1,5 +1,5 @@
 package chypakk.observer.event;
 
 public enum Action {
-    ADDED, REMOVED
+    ADDED, REMOVED, ALMOST_REMOVED
 }

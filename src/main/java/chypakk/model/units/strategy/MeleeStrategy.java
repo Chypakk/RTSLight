@@ -1,4 +1,4 @@
-package chypakk.model.strategy;
+package chypakk.model.units.strategy;
 
 public class MeleeStrategy implements AttackStrategy{
     @Override

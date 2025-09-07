@@ -2,15 +2,11 @@ package chypakk.ui;
 
 import chypakk.composite.MenuSystem;
 import chypakk.model.Castle;
+import chypakk.model.GeneratorDisplayConfig;
+import chypakk.model.ResourceDisplayConfig;
 import chypakk.model.resources.ResourceType;
-import chypakk.model.resources.generator.ResourceGenerator;
-import chypakk.observer.event.BuildingEvent;
-import chypakk.observer.event.GameEvent;
-import chypakk.observer.event.GeneratorEvent;
-import chypakk.observer.event.ResourceEvent;
-import com.googlecode.lanterna.TerminalPosition;
+import chypakk.observer.event.*;
 import com.googlecode.lanterna.TerminalSize;
-import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
@@ -21,7 +17,6 @@ import com.googlecode.lanterna.terminal.swing.SwingTerminalFontConfiguration;
 
 import java.awt.*;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 public class LanternaUI implements GameUI {
@@ -31,6 +26,7 @@ public class LanternaUI implements GameUI {
 
     private final Screen screen;
     private final TextGraphics graphics;
+    private final UiLayout uiLayout;
 
     private final MenuSystem menuSystem;
     private final Castle castle;
@@ -49,11 +45,7 @@ public class LanternaUI implements GameUI {
                 .createTerminal());
         screen.setCursorPosition(null);
         graphics = screen.newTextGraphics();
-    }
-
-    @Override
-    public void initialize() {
-
+        this.uiLayout = new UiLayout(screen);
     }
 
     @Override
@@ -73,21 +65,46 @@ public class LanternaUI implements GameUI {
     }
 
     @Override
-    public void shutdown() {
-
-    }
-
-    @Override
     public void onMessage(String message) {
-
+//        switch (event.getType()){
+//            case "GoldMine" -> {
+//                List<ResourceGenerator> generators = castle.getGenerators(event.getType());
+//                String forestText = "шахт: " + generators.size();
+//                graphics.putString((WIDTH / 2) + 15, 0,forestText);
+//                graphics.putString((WIDTH / 2) + 15 + forestText.length(), 0, " ".repeat(2));
+//            }
+//            case "Forest" -> {
+//                List<ResourceGenerator> generators = castle.getGenerators(event.getType());
+//
+//                if (event.getAction() == Action.ALMOST_REMOVED){
+//                    almostRemovedForestCount++;
+//                } else if (event.getAction() == Action.REMOVED){
+//                    almostRemovedForestCount--;
+//                }
+//                String forestText = "лесов: " + generators.size();
+//                int totalLength = forestText.length();
+//
+//                graphics.setForegroundColor(TextColor.ANSI.WHITE);
+//                graphics.putString((WIDTH / 2) + 10, 1, forestText);
+//
+//                if (almostRemovedForestCount > 0){
+//                    String forestCount = " (" + almostRemovedForestCount + ")";
+//                    graphics.setForegroundColor(TextColor.ANSI.RED_BRIGHT);
+//                    graphics.putString((WIDTH / 2) + 10 + totalLength, 1, forestCount);
+//                    totalLength += forestCount.length();
+//                }
+//
+//                graphics.putString((WIDTH / 2) + 10 + totalLength, 1, " ".repeat(5));
+//            }
+//        }
     }
 
     @Override
     public void onEvent(GameEvent gameEvent) {
         try {
             switch (gameEvent) {
-                case ResourceEvent event -> handleResourceEvent(event);
-                case GeneratorEvent event -> handleGeneratorEvent(event);
+                case ResourceEvent event -> updateResourcePanel();
+                case GeneratorEvent event -> updateGeneratorPanel();
                 case BuildingEvent event -> handleBuildingEvent(event);
 
                 default -> throw new IllegalStateException("Unexpected value: " + gameEvent);
@@ -98,68 +115,46 @@ public class LanternaUI implements GameUI {
 
     }
 
+    private void updateGeneratorPanel() throws IOException {
+        uiLayout.renderItemList(
+                graphics,
+                UiRegion.GENERATOR_PANEL,
+                castle.getGeneratorDisplayConfigs(),
+                GeneratorDisplayConfig::label,
+                config -> castle.getGenerators(config.type()).size(),
+                config -> castle.getAlmostRemovedCount(config.type())
+        );
+    }
+
+    private void updateResourcePanel() throws IOException {
+        uiLayout.renderItemList(
+                graphics,
+                UiRegion.RESOURCE_PANEL,
+                castle.getResourceDisplayConfigs(),
+                ResourceDisplayConfig::label,
+                config -> castle.getResource(ResourceType.fromType(config.type())),
+                config -> 0
+        );
+    }
+
     private void handleBuildingEvent(BuildingEvent event) {
-    }
-
-    private void handleGeneratorEvent(GeneratorEvent event) throws IOException {
-
-        switch (event.getType()){
-            case "GoldMine" -> {
-                List<ResourceGenerator> generators = castle.getGenerators(event.getType());
-                String forestText = "шахт: " + generators.size();
-                graphics.putString((WIDTH / 2) + 15, 0,forestText);
-                graphics.putString((WIDTH / 2) + 15 + forestText.length(), 1, " ".repeat(2));
-            }
-            case "Forest" -> {
-                List<ResourceGenerator> generators = castle.getGenerators(event.getType());
-                String forestText = "лесов: " + generators.size();
-                graphics.putString((WIDTH / 2) + 14, 1, forestText);
-                graphics.putString((WIDTH / 2) + 14 + forestText.length(), 1, " ".repeat(2));
-            }
-        }
-
-        screen.refresh();
-    }
-
-    private void handleResourceEvent(ResourceEvent event) throws IOException {
-
-        switch (event.getType()){
-
-            case "GOLD" -> {
-                String goldText = "золото: ";
-                int gold = castle.getResource(ResourceType.GOLD);
-                goldText = gold >= 999 ? goldText + "999+" : goldText + gold;
-                graphics.putString((WIDTH / 2) + 25, 0, goldText);
-                graphics.putString((WIDTH / 2) + 25 + goldText.length(), 0, " ".repeat(10));
-            }
-            case "WOOD" -> {
-                String woodText = "дерево: ";
-                int wood = castle.getResource(ResourceType.WOOD);
-                woodText = wood >= 999 ? woodText + "999+" : woodText + wood;
-                graphics.putString((WIDTH / 2) + 25, 1, woodText);
-                graphics.putString((WIDTH / 2) + 25 + woodText.length(), 1, " ".repeat(10));
-            }
-
-        }
-
-        screen.refresh();
     }
 
     @Override
     public void displayMenu(String title, Map<Integer, String> options) {
-        //screen.clear();
-        graphics.setForegroundColor(TextColor.ANSI.WHITE);
-        int x = 0;
+        uiLayout.clear(graphics, UiRegion.MENU);
+        uiLayout.drawBox(graphics, UiRegion.MENU);
+
+        Rectangle bounds = uiLayout.getBounds(UiRegion.MENU);
+        int x = (int) (bounds.getX() + 2);
+        int y = (int) (bounds.getY() + 1);
+
+        String header = "[ " + title + " ]";
+        int headerX = (int) (bounds.getX() + (bounds.getWidth() / 2) - (header.length() / 2));
+        graphics.putString(headerX, (int) bounds.getY(), header);
+
         for (var entry : options.entrySet()) {
-            graphics.putString(1, x, entry.getKey() + " - " + entry.getValue());
-            x++;
-        }
-
-        try {
-
-            screen.refresh();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            graphics.putString(x, y++, entry.getKey() + " - " + entry.getValue());
         }
     }
 
