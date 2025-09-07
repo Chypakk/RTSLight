@@ -16,7 +16,9 @@ import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.swing.SwingTerminalFontConfiguration;
 
 import java.awt.*;
+import java.util.List;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 
 public class LanternaUI implements GameUI {
@@ -66,37 +68,7 @@ public class LanternaUI implements GameUI {
 
     @Override
     public void onMessage(String message) {
-//        switch (event.getType()){
-//            case "GoldMine" -> {
-//                List<ResourceGenerator> generators = castle.getGenerators(event.getType());
-//                String forestText = "шахт: " + generators.size();
-//                graphics.putString((WIDTH / 2) + 15, 0,forestText);
-//                graphics.putString((WIDTH / 2) + 15 + forestText.length(), 0, " ".repeat(2));
-//            }
-//            case "Forest" -> {
-//                List<ResourceGenerator> generators = castle.getGenerators(event.getType());
-//
-//                if (event.getAction() == Action.ALMOST_REMOVED){
-//                    almostRemovedForestCount++;
-//                } else if (event.getAction() == Action.REMOVED){
-//                    almostRemovedForestCount--;
-//                }
-//                String forestText = "лесов: " + generators.size();
-//                int totalLength = forestText.length();
-//
-//                graphics.setForegroundColor(TextColor.ANSI.WHITE);
-//                graphics.putString((WIDTH / 2) + 10, 1, forestText);
-//
-//                if (almostRemovedForestCount > 0){
-//                    String forestCount = " (" + almostRemovedForestCount + ")";
-//                    graphics.setForegroundColor(TextColor.ANSI.RED_BRIGHT);
-//                    graphics.putString((WIDTH / 2) + 10 + totalLength, 1, forestCount);
-//                    totalLength += forestCount.length();
-//                }
-//
-//                graphics.putString((WIDTH / 2) + 10 + totalLength, 1, " ".repeat(5));
-//            }
-//        }
+        displayMessage(message);
     }
 
     @Override
@@ -148,38 +120,119 @@ public class LanternaUI implements GameUI {
         Rectangle bounds = uiLayout.getBounds(UiRegion.MENU);
         int x = (int) (bounds.getX() + 2);
         int y = (int) (bounds.getY() + 1);
+        int maxWidth = (int) bounds.getWidth();
 
         String header = "[ " + title + " ]";
         int headerX = (int) (bounds.getX() + (bounds.getWidth() / 2) - (header.length() / 2));
         graphics.putString(headerX, (int) bounds.getY(), header);
 
         for (var entry : options.entrySet()) {
-            graphics.putString(x, y++, entry.getKey() + " - " + entry.getValue());
+            String text = entry.getKey() + " - " + entry.getValue();
+            List<String> lines = wrapText(text, maxWidth);
+
+            for (String line : lines) {
+                if (y >= bounds.getY() + bounds.getHeight() - 1) {
+                    break; // Защита от выхода за границы
+                }
+                graphics.putString(x, y++, line);
+            }
+        }
+
+        try {
+            screen.refresh();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private List<String> wrapText(String text, int maxWidth) {
+        List<String> lines = new ArrayList<>();
+        if (text == null || text.isEmpty() || maxWidth <= 0) {
+            return lines;
+        }
+
+        String[] words = text.split(" ");
+        StringBuilder currentLine = new StringBuilder();
+
+        for (String word : words) {
+            // Обработка очень длинных слов (превышающих ширину)
+            if (word.length() > maxWidth) {
+                flushLine(currentLine, lines);
+                for (int i = 0; i < word.length(); i += maxWidth) {
+                    int end = Math.min(i + maxWidth, word.length());
+                    lines.add(word.substring(i, end));
+                }
+                continue;
+            }
+
+            // Проверка помещения слова в текущую строку
+            if (currentLine.length() == 0) {
+                currentLine.append(word);
+            } else if (currentLine.length() + word.length() + 1 <= maxWidth) {
+                currentLine.append(" ").append(word);
+            } else {
+                flushLine(currentLine, lines);
+                currentLine.append(word);
+            }
+        }
+
+        flushLine(currentLine, lines);
+        return lines;
+    }
+
+    private void flushLine(StringBuilder line, List<String> lines) {
+        if (line.length() > 0) {
+            lines.add(line.toString());
+            line.setLength(0);
         }
     }
 
     @Override
     public int getChoice(Map<Integer, String> options) {
         try {
-            KeyStroke key = screen.readInput();
-            if (key.getKeyType() == KeyType.F1) return 0;
+            while (true) {
+                KeyStroke key = screen.pollInput();
+                if (key != null) {
+                    if (key.getKeyType() == KeyType.F1) return 0;
 
-            Character input = key.getCharacter();
-            return switch (input) {
-                case '1' -> 1;
-                case '2' -> 2;
-                case '3' -> 3;
-                default -> 0;
-            };
+                    Character input = key.getCharacter();
+                    if (input != null) {
+                        switch (input) {
+                            case '1': return 1;
+                            case '2': return 2;
+                            case '3': return 3;
+                            case '0': return 0;
+                        }
+                    }
+                }
+
+                Thread.sleep(10);
+            }
 
 
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
     public void displayMessage(String message) {
+        Rectangle bounds = uiLayout.getBounds(UiRegion.MENU);
+        int x = (int) (bounds.getX() + 2);
+        int y = (int) (bounds.getY() + bounds.getHeight() - 1);
 
+        String paddedMessage = (message.length() > bounds.getWidth() - 4)
+                ? message.substring(0, (int) bounds.getWidth() - 4)
+                : message;
+
+        graphics.putString(x, y, paddedMessage);
+
+        try {
+            screen.refresh();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
