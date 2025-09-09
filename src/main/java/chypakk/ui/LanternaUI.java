@@ -132,7 +132,7 @@ public class LanternaUI implements GameUI {
 
             for (String line : lines) {
                 if (y >= bounds.getY() + bounds.getHeight() - 1) {
-                    break; // Защита от выхода за границы
+                    break;
                 }
                 graphics.putString(x, y++, line);
             }
@@ -155,7 +155,6 @@ public class LanternaUI implements GameUI {
         StringBuilder currentLine = new StringBuilder();
 
         for (String word : words) {
-            // Обработка очень длинных слов (превышающих ширину)
             if (word.length() > maxWidth) {
                 flushLine(currentLine, lines);
                 for (int i = 0; i < word.length(); i += maxWidth) {
@@ -165,8 +164,7 @@ public class LanternaUI implements GameUI {
                 continue;
             }
 
-            // Проверка помещения слова в текущую строку
-            if (currentLine.length() == 0) {
+            if (currentLine.isEmpty()) {
                 currentLine.append(word);
             } else if (currentLine.length() + word.length() + 1 <= maxWidth) {
                 currentLine.append(" ").append(word);
@@ -181,7 +179,7 @@ public class LanternaUI implements GameUI {
     }
 
     private void flushLine(StringBuilder line, List<String> lines) {
-        if (line.length() > 0) {
+        if (!line.isEmpty()) {
             lines.add(line.toString());
             line.setLength(0);
         }

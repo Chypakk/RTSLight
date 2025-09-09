@@ -11,8 +11,7 @@ import chypakk.observer.GameObserver;
 import chypakk.observer.event.*;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.*;
 
 public class Castle implements GameObservable {
     private int health;
@@ -32,8 +31,20 @@ public class Castle implements GameObservable {
             new ResourceDisplayConfig("WOOD", "дерево", 2)
     );
 
+    private final ScheduledExecutorService resourceExecutor =
+            Executors.newSingleThreadScheduledExecutor(r -> {
+                Thread t = new Thread(r);
+                t.setName("Resource-Generator-Thread");
+                t.setDaemon(true);
+                return t;
+            });
+
     public Castle(int health) {
         this.health = health;
+    }
+
+    public ScheduledFuture<?> scheduleResourceTask(Runnable task, long delay, long period, TimeUnit unit) {
+        return resourceExecutor.scheduleAtFixedRate(task, delay, period, unit);
     }
 
     public void addResource(Resource res) {
@@ -127,10 +138,18 @@ public class Castle implements GameObservable {
     }
 
     public void stopAllGenerators() {
-        synchronized (generators) {
-            for (ResourceGenerator generator : generators) {
-                generator.stopGenerator();
+        resourceExecutor.shutdownNow();
+        try {
+            if (!resourceExecutor.awaitTermination(1, TimeUnit.SECONDS)) {
+                resourceExecutor.shutdownNow();
             }
+        } catch (InterruptedException e) {
+            resourceExecutor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+
+        synchronized (generators) {
+            generators.clear();
         }
         System.out.println("Все генераторы остановлены");
     }
