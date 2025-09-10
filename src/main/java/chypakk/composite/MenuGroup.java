@@ -23,9 +23,7 @@ public class MenuGroup implements MenuComponent{
     @Override
     public void execute(Castle castle) {
         while (true) {
-
-            Map<Integer, String> options = new LinkedHashMap<>();
-            items.forEach((k, v) -> options.put(k, v.getTitle()));
+            Map<Integer, String> options = buildVisibleOptions(castle);
 
             if (!title.equals("Главное меню")) {
                 options.put(0, "Назад");
@@ -38,7 +36,7 @@ public class MenuGroup implements MenuComponent{
                 break;
             }
 
-            MenuComponent selected = items.get(choice);
+            MenuComponent selected = getVisibleItem(castle, choice);
             if (selected != null) {
                 selected.execute(castle);
             } else {
@@ -47,8 +45,47 @@ public class MenuGroup implements MenuComponent{
         }
     }
 
+    private Map<Integer, String> buildVisibleOptions(Castle castle) {
+        Map<Integer, String> options = new LinkedHashMap<>();
+        int counter = 1;
+
+        for (MenuComponent component : items.values()) {
+            if (component.isVisible(castle)) {
+                if (component.getTitle().equals("Выход")){
+                    options.put(0, component.getTitle());
+
+                } else{
+                    options.put(counter++, component.getTitle());
+
+                }
+            }
+        }
+
+        return options;
+    }
+
+    private MenuComponent getVisibleItem(Castle castle, int choice) {
+        int counter = 1;
+        for (MenuComponent component : items.values()) {
+            if (component.isVisible(castle)) {
+                if (counter++ == choice) {
+                    return component;
+                }
+                if (component.getTitle().equals("Выход") && choice == 0){
+                    return component;
+                }
+            }
+        }
+        return null;
+    }
+
     @Override
     public String getTitle() {
         return title;
+    }
+
+    @Override
+    public boolean isVisible(Castle castle) {
+        return items.values().stream().anyMatch(item -> item.isVisible(castle));
     }
 }

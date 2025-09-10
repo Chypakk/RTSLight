@@ -20,8 +20,16 @@ public class MenuSystem {
 
         MenuGroup rootMenu = new MenuGroup("Главное меню", renderer);
         rootMenu.addItem(1, buildConstructMenu());
-        rootMenu.addItem(2, buildUseBuildingMenu());
-        rootMenu.addItem(3, buildReportsMenu());
+        MenuComponent useMenu = buildUseBuildingMenu();
+
+//        if (useMenu.isVisible(castle)) {
+        rootMenu.addItem(2, useMenu);
+//        }
+
+        if (renderer.getClass().getSimpleName().toLowerCase().contains("console")) {
+            rootMenu.addItem(3, buildReportsMenu());
+        }
+
         rootMenu.addItem(0, new CommandLeaf("Выход", new ExitCommand()));
 
         return rootMenu;
@@ -42,19 +50,28 @@ public class MenuSystem {
         return buildMenu;
     }
 
-    private MenuComponent buildUseBuildingMenu(){
-        MenuGroup buildingsUseMenu = new MenuGroup("Использовать", renderer);
+    private MenuComponent buildUseBuildingMenu() {
+        MenuGroup buildingsUseMenu = new MenuGroup("Здания", renderer);
 
         MenuGroup marketMenu = new MenuGroup("Рынок", renderer);
 
-        marketMenu.addItem(1, new CommandLeaf("Обменять 10 дерева на 5 золота", new ExchangeResourceCommand(WOOD, 10, GOLD, 5)));
-        marketMenu.addItem(2, new CommandLeaf("Обменять 5 золота на 10 дерева", new ExchangeResourceCommand(GOLD, 5, WOOD, 10)));
+        marketMenu.addItem(1, new CommandLeaf(
+                "Обменять 10 дерева на 5 золота",
+                new ExchangeResourceCommand(WOOD, 10, GOLD, 5),
+                castle -> castle.haveBuilding("Рынок")
+        ));
+        marketMenu.addItem(2, new CommandLeaf(
+                "Обменять 5 золота на 10 дерева",
+                new ExchangeResourceCommand(GOLD, 5, WOOD, 10),
+                castle -> castle.haveBuilding("Рынок")
+        ));
+
         buildingsUseMenu.addItem(1, marketMenu);
 
         return buildingsUseMenu;
     }
 
-    private MenuComponent buildReportsMenu(){
+    private MenuComponent buildReportsMenu() {
         MenuGroup reportsMenu = new MenuGroup("Отчеты", renderer);
         reportsMenu.addItem(1, new CommandLeaf("Ресурсы", new ShowResourcesCommand()));
         reportsMenu.addItem(2, new CommandLeaf("Генераторы", new ShowGeneratorsCommand()));
@@ -64,9 +81,10 @@ public class MenuSystem {
     }
 
     public void start() {
-        MenuComponent rootMenu = buildRootMenu();
+        MenuComponent menu = buildRootMenu();
+
         while (castle.isAlive()) {
-            rootMenu.execute(castle);
+            menu.execute(castle);
         }
     }
 }
