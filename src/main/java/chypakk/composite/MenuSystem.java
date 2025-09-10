@@ -2,7 +2,13 @@ package chypakk.composite;
 
 import chypakk.composite.command.*;
 import chypakk.model.Castle;
+import chypakk.model.building.Barracks;
+import chypakk.model.building.Marketplace;
+import chypakk.model.resources.generator.Forest;
+import chypakk.model.resources.generator.GoldMine;
 import chypakk.ui.MenuRender;
+
+import java.util.Map;
 
 import static chypakk.model.resources.ResourceType.GOLD;
 import static chypakk.model.resources.ResourceType.WOOD;
@@ -20,11 +26,7 @@ public class MenuSystem {
 
         MenuGroup rootMenu = new MenuGroup("Главное меню", renderer);
         rootMenu.addItem(1, buildConstructMenu());
-        MenuComponent useMenu = buildUseBuildingMenu();
-
-//        if (useMenu.isVisible(castle)) {
-        rootMenu.addItem(2, useMenu);
-//        }
+        rootMenu.addItem(2, buildUseBuildingMenu());
 
         if (renderer.getClass().getSimpleName().toLowerCase().contains("console")) {
             rootMenu.addItem(3, buildReportsMenu());
@@ -37,11 +39,38 @@ public class MenuSystem {
 
     private MenuComponent buildConstructMenu() {
         MenuGroup generatorsMenu = new MenuGroup("Генераторы", renderer);
-        generatorsMenu.addItem(1, new CommandLeaf("Добавить шахту (50 золота, 60 дерева)", new AddGoldMineCommand()));
-        generatorsMenu.addItem(2, new CommandLeaf("Добавить лес (70 дерева)", new AddForestCommand()));
+        generatorsMenu.addItem(1, new CommandLeaf("Добавить шахту (50 золота, 60 дерева)", new AddGeneratorCommand(
+                () -> new GoldMine(2, 10, 70, castle),
+                Map.of(
+                        GOLD, 50, WOOD, 60
+                )
+        )));
+        generatorsMenu.addItem(2, new CommandLeaf("Добавить лес (70 дерева)", new AddGeneratorCommand(
+                () -> new Forest(1, 5, 100, castle),
+                Map.of(
+                        WOOD, 70
+                )
+        )));
 
         MenuGroup construction = new MenuGroup("Здания", renderer);
-        construction.addItem(1, new CommandLeaf("Добавить рынок (10 золота, 20 дерева)", new AddMarketplaceCommand()));
+        construction.addItem(1, new CommandLeaf("Добавить рынок (10 золота, 20 дерева)",
+                new AddBuildingCommand(
+                        new Marketplace(),
+                        Map.of(
+                                GOLD, 10, WOOD, 20
+                        )
+                ),
+                castle -> !castle.haveBuilding("Рынок")
+        ));
+        construction.addItem(2, new CommandLeaf("Добавить казармы (50 золота, 50 дерева)",
+                new AddBuildingCommand(
+                        new Barracks(),
+                        Map.of(
+                                GOLD, 50, WOOD, 50
+                        )
+                ),
+                castle -> !castle.haveBuilding("Казармы")
+        ));
 
         MenuGroup buildMenu = new MenuGroup("Построить", renderer);
         buildMenu.addItem(1, generatorsMenu);
@@ -52,7 +81,6 @@ public class MenuSystem {
 
     private MenuComponent buildUseBuildingMenu() {
         MenuGroup buildingsUseMenu = new MenuGroup("Здания", renderer);
-
         MenuGroup marketMenu = new MenuGroup("Рынок", renderer);
 
         marketMenu.addItem(1, new CommandLeaf(
@@ -82,7 +110,6 @@ public class MenuSystem {
 
     public void start() {
         MenuComponent menu = buildRootMenu();
-
         while (castle.isAlive()) {
             menu.execute(castle);
         }

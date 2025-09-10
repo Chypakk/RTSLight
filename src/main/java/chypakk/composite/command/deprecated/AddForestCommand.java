@@ -1,12 +1,14 @@
-package chypakk.composite.command;
+package chypakk.composite.command.deprecated;
 
+import chypakk.composite.command.GameCommand;
 import chypakk.model.Castle;
 import chypakk.model.resources.generator.Forest;
 import chypakk.model.resources.generator.ResourceGenerator;
 
 import static chypakk.model.resources.ResourceType.WOOD;
 
-public class AddForestCommand implements GameCommand{
+@Deprecated
+public class AddForestCommand implements GameCommand {
     @Override
     public void execute(Castle castle) {
         if (castle.getResource(WOOD) >= 70) {

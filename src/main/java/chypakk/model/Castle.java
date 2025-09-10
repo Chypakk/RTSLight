@@ -170,6 +170,10 @@ public class Castle implements GameObservable {
         return neededBuilding != null;
     }
 
+    public boolean haveBuilding(Building building) {
+        return buildings.contains(building);
+    }
+
     public void printBuildings() {
         synchronized (buildings) {
             if (buildings.isEmpty()) {
@@ -263,4 +267,6 @@ public class Castle implements GameObservable {
     public List<ResourceDisplayConfig> getResourceDisplayConfigs(){
         return resourceDisplayConfigs;
     }
+
+
 }
