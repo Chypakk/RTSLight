@@ -2,6 +2,7 @@ package chypakk.ui;
 
 import chypakk.composite.MenuSystem;
 import chypakk.config.BuildingDisplayConfig;
+import chypakk.config.UnitDisplayConfig;
 import chypakk.model.Castle;
 import chypakk.config.GeneratorDisplayConfig;
 import chypakk.config.ResourceDisplayConfig;
@@ -24,8 +25,8 @@ import java.util.Map;
 
 public class LanternaUI implements GameUI {
 
-    private static final int WIDTH = 100;
-    private static final int HEIGHT = 30;
+    private static final int WIDTH = 100; // 80
+    private static final int HEIGHT = 30; // 24
 
     private final Screen screen;
     private final TextGraphics graphics;
@@ -55,7 +56,7 @@ public class LanternaUI implements GameUI {
     public void init() {
         try {
             updateBuildingPanel();
-//            updateUnitPanel();
+            updateUnitPanel();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -89,6 +90,7 @@ public class LanternaUI implements GameUI {
                 case ResourceEvent event -> updateResourcePanel();
                 case GeneratorEvent event -> updateGeneratorPanel();
                 case BuildingEvent event -> updateBuildingPanel();
+                case UnitEvent event -> updateUnitPanel();
 
                 default -> throw new IllegalStateException("Unexpected value: " + gameEvent);
             }
@@ -96,6 +98,17 @@ public class LanternaUI implements GameUI {
             throw new RuntimeException(e);
         }
 
+    }
+
+    private void updateUnitPanel() throws IOException {
+        uiLayout.renderItemList(
+                graphics,
+                UiRegion.UNIT_PANEL,
+                castle.getUnitDisplayConfigs(),
+                UnitDisplayConfig::label,
+                config -> castle.getUnits(config.label()).size(),
+                config -> 0
+        );
     }
 
     private void updateBuildingPanel() throws IOException {
@@ -128,9 +141,6 @@ public class LanternaUI implements GameUI {
                 config -> castle.getResource(ResourceType.fromType(config.type())),
                 config -> 0
         );
-    }
-
-    private void handleBuildingEvent(BuildingEvent event) {
     }
 
     @Override

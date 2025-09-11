@@ -3,6 +3,7 @@ package chypakk.model;
 import chypakk.config.BuildingDisplayConfig;
 import chypakk.config.GeneratorDisplayConfig;
 import chypakk.config.ResourceDisplayConfig;
+import chypakk.config.UnitDisplayConfig;
 import chypakk.model.building.Building;
 import chypakk.model.resources.ResourceType;
 import chypakk.model.resources.generator.ResourceGenerator;
@@ -36,6 +37,11 @@ public class Castle implements GameObservable {
     private final List<BuildingDisplayConfig> buildingDisplayConfigs = Arrays.asList(
             new BuildingDisplayConfig("Marketplace", "Рынок"),
             new BuildingDisplayConfig("Barracks", "Казармы")
+    );
+
+    private final List<UnitDisplayConfig> unitDisplayConfigs = Arrays.asList(
+            new UnitDisplayConfig("Soldier", "Рыцарь"),
+            new UnitDisplayConfig("Archer", "Лучник")
     );
 
     private final ScheduledExecutorService resourceExecutor =
@@ -198,45 +204,56 @@ public class Castle implements GameObservable {
         }
     }
 
-//    //todo реализовать систему юнитов
-//    //todo добавить observer
-//    public void addUnit(Unit unit) {
-//        synchronized (units) {
-//            units.add(unit);
-//        }
-//    }
-//
-//    //todo добавить observer
-//    public void removeUnit(Unit unit) {
-//        synchronized (units) {
-//            units.remove(unit);
-//        }
-//    }
-//
-//    public void printUnits() {
-//        synchronized (units) {
-//            if (units.isEmpty()) {
-//                System.out.println("Юнитов пока нет");
-//                return;
-//            }
-//            System.out.println("\nЮниты:");
-//            for (Unit unit : units) {
-//                System.out.println(unit);
-//            }
-//        }
-//    }
-//
-//    public List<Unit> getUnits() {
-//        return units;
-//    }
-//
-//    public int getHealth() {
-//        return health;
-//    }
-//
-//    public void takeDamage(int damage) {
-//        this.health -= damage;
-//    }
+    public void addUnit(Unit unit) {
+        synchronized (units) {
+            units.add(unit);
+
+            notifyObservers(new UnitEvent(
+                    unit.getName(),
+                    Action.ADDED
+            ));
+        }
+    }
+
+    public void removeUnit(Unit unit) {
+        synchronized (units) {
+            units.remove(unit);
+
+            notifyObservers(new UnitEvent(
+                    unit.getName(),
+                    Action.REMOVED
+            ));
+        }
+    }
+
+    public void printUnits() {
+        synchronized (units) {
+            if (units.isEmpty()) {
+                System.out.println("Юнитов пока нет");
+                return;
+            }
+            System.out.println("\nЮниты:");
+            for (Unit unit : units) {
+                System.out.println(unit);
+            }
+        }
+    }
+
+    public List<Unit> getUnits() {
+        return units;
+    }
+
+    public List<Unit> getUnits(String type) {
+        return units.stream().filter(unit -> unit.getName().equals(type)).toList();
+    }
+
+    public int getHealth() {
+        return health;
+    }
+
+    public void takeDamage(int damage) {
+        this.health -= damage;
+    }
 
     public boolean isAlive() {
         return health >= 0;
@@ -281,5 +298,9 @@ public class Castle implements GameObservable {
 
     public List<BuildingDisplayConfig> getBuildingDisplayConfigs(){
         return buildingDisplayConfigs;
+    }
+
+    public List<UnitDisplayConfig> getUnitDisplayConfigs(){
+        return unitDisplayConfigs;
     }
 }

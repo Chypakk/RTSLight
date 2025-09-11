@@ -6,6 +6,8 @@ import chypakk.model.building.Barracks;
 import chypakk.model.building.Marketplace;
 import chypakk.model.resources.generator.Forest;
 import chypakk.model.resources.generator.GoldMine;
+import chypakk.model.units.Archer;
+import chypakk.model.units.Soldier;
 import chypakk.ui.MenuRender;
 
 import java.util.Map;
@@ -82,6 +84,7 @@ public class MenuSystem {
     private MenuComponent buildUseBuildingMenu() {
         MenuGroup buildingsUseMenu = new MenuGroup("Здания", renderer);
         MenuGroup marketMenu = new MenuGroup("Рынок", renderer);
+        MenuGroup barracksMenu = new MenuGroup("Казармы", renderer);
 
         marketMenu.addItem(1, new CommandLeaf(
                 "Обменять 10 дерева на 5 золота",
@@ -94,7 +97,29 @@ public class MenuSystem {
                 castle -> castle.haveBuilding("Рынок")
         ));
 
+        barracksMenu.addItem(1, new CommandLeaf(
+                "Нанять рыцаря (30 золота, 10 дерева)",
+                new RecruitCommand(
+                        new Soldier("Рыцарь", 50, 10),
+                        Map.of(
+                                GOLD, 30, WOOD, 10
+                        )
+                ),
+                castle -> castle.haveBuilding("Казармы")
+        ));
+        barracksMenu.addItem(2, new CommandLeaf(
+                "Нанять лучика (10 золота, 20 дерева)",
+                new RecruitCommand(
+                        new Archer("Лучник", 50, 10),
+                        Map.of(
+                                GOLD, 10, WOOD, 20
+                        )
+                ),
+                castle -> castle.haveBuilding("Казармы")
+        ));
+
         buildingsUseMenu.addItem(1, marketMenu);
+        buildingsUseMenu.addItem(2, barracksMenu);
 
         return buildingsUseMenu;
     }
