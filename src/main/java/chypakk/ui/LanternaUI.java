@@ -1,9 +1,10 @@
 package chypakk.ui;
 
 import chypakk.composite.MenuSystem;
+import chypakk.config.BuildingDisplayConfig;
 import chypakk.model.Castle;
-import chypakk.model.GeneratorDisplayConfig;
-import chypakk.model.ResourceDisplayConfig;
+import chypakk.config.GeneratorDisplayConfig;
+import chypakk.config.ResourceDisplayConfig;
 import chypakk.model.resources.ResourceType;
 import chypakk.observer.event.*;
 import com.googlecode.lanterna.TerminalSize;
@@ -23,8 +24,8 @@ import java.util.Map;
 
 public class LanternaUI implements GameUI {
 
-    private static final int WIDTH = 80;
-    private static final int HEIGHT = 24;
+    private static final int WIDTH = 100;
+    private static final int HEIGHT = 30;
 
     private final Screen screen;
     private final TextGraphics graphics;
@@ -51,10 +52,20 @@ public class LanternaUI implements GameUI {
     }
 
     @Override
+    public void init() {
+        try {
+            updateBuildingPanel();
+//            updateUnitPanel();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public void start() {
         try {
-
             screen.startScreen();
+            init();
 
             while (castle.isAlive()) {
                 menuSystem.start();
@@ -77,7 +88,7 @@ public class LanternaUI implements GameUI {
             switch (gameEvent) {
                 case ResourceEvent event -> updateResourcePanel();
                 case GeneratorEvent event -> updateGeneratorPanel();
-                case BuildingEvent event -> handleBuildingEvent(event);
+                case BuildingEvent event -> updateBuildingPanel();
 
                 default -> throw new IllegalStateException("Unexpected value: " + gameEvent);
             }
@@ -85,6 +96,16 @@ public class LanternaUI implements GameUI {
             throw new RuntimeException(e);
         }
 
+    }
+
+    private void updateBuildingPanel() throws IOException {
+        uiLayout.renderItemList(
+                graphics,
+                UiRegion.BUILDING_PANEL,
+                castle.getBuildingDisplayConfigs(),
+                BuildingDisplayConfig::label,
+                config -> castle.haveBuilding(config.label())
+        );
     }
 
     private void updateGeneratorPanel() throws IOException {
@@ -196,10 +217,14 @@ public class LanternaUI implements GameUI {
                     Character input = key.getCharacter();
                     if (input != null) {
                         switch (input) {
-                            case '1': return 1;
-                            case '2': return 2;
-                            case '3': return 3;
-                            case '0': return 0;
+                            case '1':
+                                return 1;
+                            case '2':
+                                return 2;
+                            case '3':
+                                return 3;
+                            case '0':
+                                return 0;
                         }
                     }
                 }

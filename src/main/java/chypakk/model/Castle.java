@@ -1,5 +1,8 @@
 package chypakk.model;
 
+import chypakk.config.BuildingDisplayConfig;
+import chypakk.config.GeneratorDisplayConfig;
+import chypakk.config.ResourceDisplayConfig;
 import chypakk.model.building.Building;
 import chypakk.model.resources.ResourceType;
 import chypakk.model.resources.generator.ResourceGenerator;
@@ -29,6 +32,10 @@ public class Castle implements GameObservable {
     private final List<ResourceDisplayConfig> resourceDisplayConfigs = Arrays.asList(
             new ResourceDisplayConfig("GOLD", "золото", 1),
             new ResourceDisplayConfig("WOOD", "дерево", 2)
+    );
+    private final List<BuildingDisplayConfig> buildingDisplayConfigs = Arrays.asList(
+            new BuildingDisplayConfig("Marketplace", "Рынок"),
+            new BuildingDisplayConfig("Barracks", "Казармы")
     );
 
     private final ScheduledExecutorService resourceExecutor =
@@ -174,6 +181,10 @@ public class Castle implements GameObservable {
         return buildings.contains(building);
     }
 
+    public Set<Building> getBuildings(){
+        return buildings;
+    }
+
     public void printBuildings() {
         synchronized (buildings) {
             if (buildings.isEmpty()) {
@@ -268,5 +279,7 @@ public class Castle implements GameObservable {
         return resourceDisplayConfigs;
     }
 
-
+    public List<BuildingDisplayConfig> getBuildingDisplayConfigs(){
+        return buildingDisplayConfigs;
+    }
 }

@@ -14,6 +14,4 @@ public class Forest extends ResourceGenerator {
     protected Resource createResource() {
         return new Wood(amountPerInterval);
     }
-
-
 }

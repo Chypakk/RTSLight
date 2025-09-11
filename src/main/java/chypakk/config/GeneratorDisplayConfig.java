@@ -1,8 +1,8 @@
-package chypakk.model;
+package chypakk.config;
 
 public record GeneratorDisplayConfig(
         String type,
         String label,
-        int priority
+        int order
 ) {
 }

@@ -100,4 +100,34 @@ public class UiLayout {
         screen.refresh();
     }
 
+    public <T> void renderItemList(TextGraphics graphics,
+                                   UiRegion region,
+                                   List<T> items,
+                                   Function<T, String> labelProvider,
+                                   Function<T, Boolean> isVisible
+                                   ) throws IOException {
+        clear(graphics, region);
+        drawBox(graphics, region);
+
+        Rectangle bounds = getBounds(region);
+        int startX = (int) (bounds.getX() + 2);
+        int startY = (int) (bounds.getY() + 1);
+        int maxHeight = (int) (bounds.getHeight() - 2);
+
+        for (int i = 0; i < Math.min(items.size(), maxHeight); i++) {
+            T item = items.get(i);
+            int y = startY + i;
+
+            if (!isVisible.apply(item)) continue;
+
+            String baseText = String.format("%s",
+                    labelProvider.apply(item)
+            );
+
+            graphics.putString(startX, y, baseText);
+        }
+
+        screen.refresh();
+    }
+
 }

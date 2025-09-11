@@ -4,4 +4,5 @@ import chypakk.observer.GameObserver;
 
 public interface GameUI extends GameObserver, MenuRender {
     void start();
+    void init();
 }

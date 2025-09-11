@@ -14,6 +14,4 @@ public class GoldMine extends ResourceGenerator{
     protected Resource createResource() {
         return new Gold(amountPerInterval);
     }
-
-
 }

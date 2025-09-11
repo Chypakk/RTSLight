@@ -29,6 +29,11 @@ public class ConsoleUI implements GameUI {
     }
 
     @Override
+    public void init() {
+
+    }
+
+    @Override
     public void onMessage(String message) {
         System.out.println("[СООБЩЕНИЕ] " + message);
     }

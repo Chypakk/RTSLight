@@ -1,8 +1,8 @@
-package chypakk.model;
+package chypakk.config;
 
 public record ResourceDisplayConfig(
         String type,
         String label,
-        int priority
+        int order
 ) {
 }
