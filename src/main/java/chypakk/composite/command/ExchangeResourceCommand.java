@@ -21,17 +21,17 @@ public class ExchangeResourceCommand implements GameCommand{
     @Override
     public void execute(Castle castle) {
         if (!castle.haveBuilding("Рынок")) {
-            System.out.println("Не построен рынок!");
+            castle.sendMessage("Не построен рынок!");
             return;
         }
 
         if (castle.getResource(resourceFrom) >= amountFrom) {
             castle.removeResource(resourceFrom, amountFrom);
             castle.addResource(ResourcesBuilder.generate(resourceTo, amountTo));
-            System.out.printf("Обмен: %d %s → %d %s%n",
-                    amountFrom, resourceFrom, amountTo, resourceTo);
+
+            castle.sendMessage(String.format("Обмен: %d %s → %d %s%n", amountFrom, resourceFrom, amountTo, resourceTo));
         } else {
-            System.out.println("Недостаточно " + resourceFrom);
+            castle.sendMessage("Недостаточно " + resourceFrom);
         }
     }
 }

@@ -1,0 +1,45 @@
+package chypakk.model.managers;
+
+import chypakk.model.resources.Resource;
+import chypakk.model.resources.ResourceType;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class ResourceManager {
+    private final Map<ResourceType, Resource> resources = new ConcurrentHashMap<>();
+
+    public void addResource(Resource res) {
+        synchronized (resources) {
+            Resource existing = resources.get(res.getType());
+            if (existing != null) {
+                existing.addAmount(res.getAmount());
+            } else {
+                resources.put(res.getType(), res);
+            }
+        }
+    }
+
+    public int getResource(ResourceType type) {
+        Resource resource = resources.get(type);
+        return resource != null ? resource.getAmount() : 0;
+    }
+
+    public void removeResource(ResourceType type, int amount) {
+        synchronized (resources) {
+            resources.get(type).removeAmount(amount);
+        }
+    }
+
+    public void printResources() {
+        synchronized (resources) {
+            if (resources.isEmpty()) {
+                System.out.println("Ресурсов пока нет");
+                return;
+            }
+            for (Resource res : resources.values()) {
+                System.out.println(res);
+            }
+        }
+    }
+}

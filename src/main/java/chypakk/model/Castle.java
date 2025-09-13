@@ -5,10 +5,13 @@ import chypakk.config.GeneratorDisplayConfig;
 import chypakk.config.ResourceDisplayConfig;
 import chypakk.config.UnitDisplayConfig;
 import chypakk.model.building.Building;
+import chypakk.model.managers.BuildingManager;
+import chypakk.model.managers.GeneratorManager;
+import chypakk.model.managers.ResourceManager;
+import chypakk.model.managers.UnitManager;
 import chypakk.model.resources.ResourceType;
 import chypakk.model.resources.generator.ResourceGenerator;
 import chypakk.model.resources.Resource;
-import chypakk.model.resources.generator.Status;
 import chypakk.model.units.Unit;
 import chypakk.observer.GameObservable;
 import chypakk.observer.GameObserver;
@@ -19,11 +22,11 @@ import java.util.concurrent.*;
 
 public class Castle implements GameObservable {
     private int health;
-    private final Map<ResourceType, Resource> resources = new ConcurrentHashMap<>();
-    private final List<ResourceGenerator> generators = new CopyOnWriteArrayList<>();
-    private final List<Unit> units = new CopyOnWriteArrayList<>();
-    private final Set<Building> buildings = ConcurrentHashMap.newKeySet();
 
+    private final ResourceManager resourceManager;
+    private final GeneratorManager generatorManager;
+    private final BuildingManager buildingManager;
+    private final UnitManager unitManager;
     private final List<GameObserver> observers = new CopyOnWriteArrayList<>();
 
     private final List<GeneratorDisplayConfig> generatorDisplayConfigs = Arrays.asList(
@@ -44,207 +47,124 @@ public class Castle implements GameObservable {
             new UnitDisplayConfig("Archer", "Лучник")
     );
 
-    private final ScheduledExecutorService resourceExecutor =
-            Executors.newSingleThreadScheduledExecutor(r -> {
-                Thread t = new Thread(r);
-                t.setName("Resource-Generator-Thread");
-                t.setDaemon(true);
-                return t;
-            });
-
     public Castle(int health) {
         this.health = health;
+        this.resourceManager = new ResourceManager();
+        this.generatorManager = new GeneratorManager();
+        this.buildingManager = new BuildingManager();
+        this.unitManager = new UnitManager();
     }
 
     public ScheduledFuture<?> scheduleResourceTask(Runnable task, long delay, long period, TimeUnit unit) {
-        return resourceExecutor.scheduleAtFixedRate(task, delay, period, unit);
+        return generatorManager.scheduleResourceTask(task, delay, period, unit);
     }
 
     public void addResource(Resource res) {
-        synchronized (resources) {
-            Resource existing = resources.get(res.getType());
-            if (existing != null) {
-                existing.addAmount(res.getAmount());
-            } else {
-                resources.put(res.getType(), res);
-            }
+        resourceManager.addResource(res);
 
-            notifyObservers(new ResourceEvent(
-                    res.getType().name(), Action.ADDED, res.getAmount()
-            ));
-        }
+        notifyObservers(new ResourceEvent(
+                res.getType().name(), Action.ADDED, res.getAmount()
+        ));
     }
 
     public void removeResource(ResourceType type, int amount) {
-        synchronized (resources) {
-            resources.get(type).removeAmount(amount);
+        resourceManager.removeResource(type, amount);
 
-            notifyObservers(new ResourceEvent(
-                    type.name(), Action.REMOVED, amount
-            ));
-        }
+        notifyObservers(new ResourceEvent(
+                type.name(), Action.REMOVED, amount
+        ));
     }
 
     public int getResource(ResourceType type) {
-        synchronized (resources) {
-            Resource resource = resources.get(type);
-            return resource != null ? resource.getAmount() : 0;
-        }
+        return resourceManager.getResource(type);
     }
 
     public void printResources() {
-        synchronized (resources) {
-            if (resources.isEmpty()) {
-                System.out.println("Ресурсов пока нет");
-                return;
-            }
-            for (Resource res : resources.values()) {
-                System.out.println(res);
-            }
-        }
-    }
-
-    public void printGenerators() {
-        synchronized (generators) {
-            if (generators.isEmpty()) {
-                System.out.println("Генераторов пока нет");
-                return;
-            }
-            System.out.println("\nАктивные генераторы:");
-            for (ResourceGenerator gen : generators) {
-                System.out.println("- " + gen.getClass().getSimpleName() + ", осталось: " + gen.getAmount());
-            }
-        }
-    }
-
-    public List<ResourceGenerator> getGenerators(String type) {
-        return generators.stream().filter(generator -> generator.getClass().getSimpleName().equals(type)).toList();
-    }
-
-    public int getAlmostRemovedCount(String generatorType) {
-        return generators.stream().filter(generator ->
-                generator.getStatus() == Status.ALMOST_REMOVED && generator.getClass().getSimpleName().equals(generatorType)
-        ).toList().size();
+        resourceManager.printResources();
     }
 
     public void addGenerator(ResourceGenerator generator) {
-        synchronized (generators) {
-            generators.add(generator);
-            generator.startGenerator();
+        generatorManager.addGenerator(generator);
 
-            notifyObservers(new GeneratorEvent(
-                    generator.getClass().getSimpleName(),
-                    Action.ADDED
-            ));
-        }
+        notifyObservers(new GeneratorEvent(
+                generator.getClass().getSimpleName(),
+                Action.ADDED
+        ));
+    }
+
+    public List<ResourceGenerator> getGenerators(String type) {
+        return generatorManager.getGenerators(type);
+    }
+
+    public int getAlmostRemovedCount(String generatorType) {
+        return generatorManager.getAlmostRemovedCount(generatorType);
     }
 
     public void removeGenerator(ResourceGenerator generator) {
-        synchronized (generators) {
-            generators.remove(generator);
+        generatorManager.removeGenerator(generator);
 
-            notifyObservers(new GeneratorEvent(
-                    generator.getClass().getSimpleName(),
-                    Action.REMOVED
-            ));
-        }
+        notifyObservers(new GeneratorEvent(
+                generator.getClass().getSimpleName(),
+                Action.REMOVED
+        ));
     }
 
     public void stopAllGenerators() {
-        resourceExecutor.shutdownNow();
-        try {
-            if (!resourceExecutor.awaitTermination(1, TimeUnit.SECONDS)) {
-                resourceExecutor.shutdownNow();
-            }
-        } catch (InterruptedException e) {
-            resourceExecutor.shutdownNow();
-            Thread.currentThread().interrupt();
-        }
+        generatorManager.stopAllGenerators();
+    }
 
-        synchronized (generators) {
-            generators.clear();
-        }
-        System.out.println("Все генераторы остановлены");
+    public void printGenerators() {
+        generatorManager.printGenerators();
     }
 
     public void addBuilding(Building building) {
-        synchronized (buildings) {
-            buildings.add(building);
+        buildingManager.addBuilding(building);
 
-            notifyObservers(new BuildingEvent(
-                    building.getName(), Action.ADDED
-            ));
-
-        }
+        notifyObservers(new BuildingEvent(
+                building.getName(), Action.ADDED
+        ));
     }
 
     public boolean haveBuilding(String name) {
-        Building neededBuilding = buildings.stream().filter(build -> build.getName().equals(name)).findFirst().orElse(null);
-        return neededBuilding != null;
+        return buildingManager.haveBuilding(name);
     }
 
     public boolean haveBuilding(Building building) {
-        return buildings.contains(building);
-    }
-
-    public Set<Building> getBuildings(){
-        return buildings;
+        return buildingManager.haveBuilding(building);
     }
 
     public void printBuildings() {
-        synchronized (buildings) {
-            if (buildings.isEmpty()) {
-                System.out.println("Зданий пока нет");
-                return;
-            }
-            System.out.println("\nЗдания:");
-            for (Building gen : buildings) {
-                System.out.println("- " + gen.getClass().getSimpleName());
-            }
-        }
+        buildingManager.printBuildings();
     }
 
     public void addUnit(Unit unit) {
-        synchronized (units) {
-            units.add(unit);
+        unitManager.addUnit(unit);
 
-            notifyObservers(new UnitEvent(
-                    unit.getName(),
-                    Action.ADDED
-            ));
-        }
+        notifyObservers(new UnitEvent(
+                unit.getName(),
+                Action.ADDED
+        ));
     }
 
     public void removeUnit(Unit unit) {
-        synchronized (units) {
-            units.remove(unit);
+        unitManager.removeUnit(unit);
 
-            notifyObservers(new UnitEvent(
-                    unit.getName(),
-                    Action.REMOVED
-            ));
-        }
+        notifyObservers(new UnitEvent(
+                unit.getName(),
+                Action.REMOVED
+        ));
     }
 
     public void printUnits() {
-        synchronized (units) {
-            if (units.isEmpty()) {
-                System.out.println("Юнитов пока нет");
-                return;
-            }
-            System.out.println("\nЮниты:");
-            for (Unit unit : units) {
-                System.out.println(unit);
-            }
-        }
+        unitManager.printUnits();
     }
 
     public List<Unit> getUnits() {
-        return units;
+        return unitManager.getUnits();
     }
 
     public List<Unit> getUnits(String type) {
-        return units.stream().filter(unit -> unit.getName().equals(type)).toList();
+        return unitManager.getUnits(type);
     }
 
     public int getHealth() {
@@ -256,7 +176,7 @@ public class Castle implements GameObservable {
     }
 
     public boolean isAlive() {
-        return health >= 0;
+        return health > 0;
     }
 
     @Override
@@ -292,15 +212,15 @@ public class Castle implements GameObservable {
         return generatorDisplayConfigs;
     }
 
-    public List<ResourceDisplayConfig> getResourceDisplayConfigs(){
+    public List<ResourceDisplayConfig> getResourceDisplayConfigs() {
         return resourceDisplayConfigs;
     }
 
-    public List<BuildingDisplayConfig> getBuildingDisplayConfigs(){
+    public List<BuildingDisplayConfig> getBuildingDisplayConfigs() {
         return buildingDisplayConfigs;
     }
 
-    public List<UnitDisplayConfig> getUnitDisplayConfigs(){
+    public List<UnitDisplayConfig> getUnitDisplayConfigs() {
         return unitDisplayConfigs;
     }
 }

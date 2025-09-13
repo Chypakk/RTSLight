@@ -219,35 +219,29 @@ public class LanternaUI implements GameUI {
     @Override
     public int getChoice(Map<Integer, String> options) {
         try {
-            while (true) {
-                KeyStroke key = screen.pollInput();
-                if (key != null) {
-                    if (key.getKeyType() == KeyType.F1) return 0;
+            KeyStroke key = screen.readInput();
+            if (key != null) {
+                if (key.getKeyType() == KeyType.F1) return 0;
 
-                    Character input = key.getCharacter();
-                    if (input != null) {
-                        switch (input) {
-                            case '1':
-                                return 1;
-                            case '2':
-                                return 2;
-                            case '3':
-                                return 3;
-                            case '0':
-                                return 0;
-                        }
+                Character input = key.getCharacter();
+                if (input != null) {
+                    switch (input) {
+                        case '1':
+                            return 1;
+                        case '2':
+                            return 2;
+                        case '3':
+                            return 3;
+                        case '0':
+                            return 0;
                     }
                 }
-
-                Thread.sleep(10);
             }
-
-
         } catch (IOException e) {
             throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         }
+
+        return -1;
     }
 
     @Override
