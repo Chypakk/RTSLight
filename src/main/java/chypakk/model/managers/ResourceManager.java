@@ -1,13 +1,24 @@
 package chypakk.model.managers;
 
+import chypakk.config.ResourceConfig;
 import chypakk.model.resources.Resource;
 import chypakk.model.resources.ResourceType;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ResourceManager {
     private final Map<ResourceType, Resource> resources = new ConcurrentHashMap<>();
+
+    public ResourceManager(List<ResourceConfig> resources) {
+        for (ResourceConfig resourceConfig : resources) {
+            this.resources.put(
+                    ResourceType.valueOf(resourceConfig.type()),
+                    new Resource(ResourceType.valueOf(resourceConfig.type()), resourceConfig.initialAmount())
+            );
+        }
+    }
 
     public void addResource(Resource res) {
         synchronized (resources) {

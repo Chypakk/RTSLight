@@ -34,6 +34,7 @@ public class UiLayout {
     }
 
     public void drawBox(TextGraphics graphics, UiRegion region) {
+        graphics.setForegroundColor(TextColor.ANSI.WHITE);
         Rectangle bounds = getBounds(region);
         int x = (int) bounds.getX();
         int y = (int) bounds.getY();
@@ -71,7 +72,7 @@ public class UiLayout {
                                    Function<T, Integer> almostRemovedProvider) throws IOException {
         clear(graphics, region);
         drawBox(graphics, region);
-
+        graphics.setForegroundColor(TextColor.ANSI.WHITE);
         Rectangle bounds = getBounds(region);
         int startX = (int) (bounds.getX() + 2);
         int startY = (int) (bounds.getY() + 1);
@@ -108,7 +109,7 @@ public class UiLayout {
                                    ) throws IOException {
         clear(graphics, region);
         drawBox(graphics, region);
-
+        graphics.setForegroundColor(TextColor.ANSI.WHITE);
         Rectangle bounds = getBounds(region);
         int startX = (int) (bounds.getX() + 2);
         int startY = (int) (bounds.getY() + 1);

@@ -1,0 +1,99 @@
+{
+  "resources": [
+    {
+      "type": "GOLD",
+      "label": "золото",
+      "order": 1,
+      "initialAmount": 50
+    },
+    {
+      "type": "WOOD",
+      "label": "дерево",
+      "order": 2,
+      "initialAmount": 50
+    }
+  ],
+  "generators": [
+    {
+      "type": "GoldMine",
+      "label": "шахта",
+      "order": 1,
+      "interval": 5,
+      "amountPerInterval": 10,
+      "totalAmount": 70,
+      "cost": {
+        "GOLD": 50,
+        "WOOD": 60
+      }
+    },
+    {
+      "type": "Forest",
+      "label": "лес",
+      "order": 2,
+      "interval": 2,
+      "amountPerInterval": 5,
+      "totalAmount": 100,
+      "cost": {
+        "WOOD": 70
+      }
+    }
+  ],
+  "buildings": [
+    {
+      "type": "Marketplace",
+      "label": "Рынок",
+      "health": 20,
+      "cost": {
+        "GOLD": 10,
+        "WOOD": 20
+      }
+    },
+    {
+      "type": "Barracks",
+      "label": "Казармы",
+      "health": 30,
+      "cost": {
+        "GOLD": 50,
+        "WOOD": 50
+      }
+    }
+  ],
+  "units": [
+    {
+      "type": "Soldier",
+      "label": "Рыцарь",
+      "health": 50,
+      "baseDamage": 10,
+      "attackStrategy": "MELEE",
+      "cost": {
+        "GOLD": 30,
+        "WOOD": 10
+      }
+    },
+    {
+      "type": "Archer",
+      "label": "Лучник",
+      "health": 50,
+      "baseDamage": 10,
+      "attackStrategy": "RANGE",
+      "cost": {
+        "GOLD": 10,
+        "WOOD": 20
+      }
+    }
+  ],
+  "exchanges": [
+    {
+      "fromType": "WOOD",
+      "fromAmount": 10,
+      "toType": "GOLD",
+      "toAmount": 5
+    },
+    {
+      "fromType": "GOLD",
+      "fromAmount": 5,
+      "toType": "WOOD",
+      "toAmount": 10
+    }
+  ]
+}

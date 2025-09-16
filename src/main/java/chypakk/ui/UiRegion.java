@@ -2,8 +2,8 @@ package chypakk.ui;
 
 public enum UiRegion {
     MENU(0.0, 0.0, 0.5, 0.7),
-    GENERATOR_PANEL(0.5, 0.0, 0.5, 0.5),
     RESOURCE_PANEL(0.5, 0.5, 0.5, 0.5),
+    GENERATOR_PANEL(0.5, 0.0, 0.5, 0.5),
     BUILDING_PANEL(0.0, 0.7, 0.25, 0.3 ),
     UNIT_PANEL(0.25, 0.7, 0.25, 0.3);
 

@@ -1,8 +1,9 @@
 package chypakk;
 
+import chypakk.config.ConfigLoader;
+import chypakk.config.GameConfig;
 import chypakk.model.Castle;
-import chypakk.model.resources.generator.Forest;
-import chypakk.model.resources.generator.GoldMine;
+import chypakk.model.factory.GeneratorFactory;
 import chypakk.ui.GameUI;
 import chypakk.ui.LanternaUI;
 
@@ -13,22 +14,25 @@ public class GameEngine {
 
     private final Castle castle;
     private final GameUI gameUI;
+    private final GameConfig config;
 
     public GameEngine() {
-        this.castle = new Castle(100);
+        this.config = ConfigLoader.load();
+        this.castle = new Castle(100, config);
+
         try {
             this.gameUI = new LanternaUI(castle);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
     }
 
     public void start() {
-
-        GoldMine goldMine = new GoldMine(5, 10, 70, castle);
-        Forest forest = new Forest(2, 5, 100, castle);
-        castle.addGenerator(goldMine);
-        castle.addGenerator(forest);
+        GeneratorFactory generatorFactory = new GeneratorFactory(config);
+        for (var generatorConf : config.generators()){
+            castle.addGenerator(generatorFactory.createGenerator(generatorConf.type(), castle));
+        }
 
         gameUI.start();
     }

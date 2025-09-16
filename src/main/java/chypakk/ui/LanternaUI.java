@@ -1,11 +1,8 @@
 package chypakk.ui;
 
 import chypakk.composite.MenuSystem;
-import chypakk.config.BuildingDisplayConfig;
-import chypakk.config.UnitDisplayConfig;
+import chypakk.config.*;
 import chypakk.model.Castle;
-import chypakk.config.GeneratorDisplayConfig;
-import chypakk.config.ResourceDisplayConfig;
 import chypakk.model.resources.ResourceType;
 import chypakk.observer.event.*;
 import com.googlecode.lanterna.TerminalSize;
@@ -104,8 +101,8 @@ public class LanternaUI implements GameUI {
         uiLayout.renderItemList(
                 graphics,
                 UiRegion.UNIT_PANEL,
-                castle.getUnitDisplayConfigs(),
-                UnitDisplayConfig::label,
+                castle.getUnitConfigs(),
+                UnitConfig::label,
                 config -> castle.getUnits(config.label()).size(),
                 config -> 0
         );
@@ -115,8 +112,8 @@ public class LanternaUI implements GameUI {
         uiLayout.renderItemList(
                 graphics,
                 UiRegion.BUILDING_PANEL,
-                castle.getBuildingDisplayConfigs(),
-                BuildingDisplayConfig::label,
+                castle.getBuildingConfigs(),
+                BuildingConfig::label,
                 config -> castle.haveBuilding(config.label())
         );
     }
@@ -125,8 +122,8 @@ public class LanternaUI implements GameUI {
         uiLayout.renderItemList(
                 graphics,
                 UiRegion.GENERATOR_PANEL,
-                castle.getGeneratorDisplayConfigs(),
-                GeneratorDisplayConfig::label,
+                castle.getGeneratorConfigs(),
+                GeneratorConfig::label,
                 config -> castle.getGenerators(config.type()).size(),
                 config -> castle.getAlmostRemovedCount(config.type())
         );
@@ -136,8 +133,8 @@ public class LanternaUI implements GameUI {
         uiLayout.renderItemList(
                 graphics,
                 UiRegion.RESOURCE_PANEL,
-                castle.getResourceDisplayConfigs(),
-                ResourceDisplayConfig::label,
+                castle.getResourceConfigs(),
+                ResourceConfig::label,
                 config -> castle.getResource(ResourceType.fromType(config.type())),
                 config -> 0
         );

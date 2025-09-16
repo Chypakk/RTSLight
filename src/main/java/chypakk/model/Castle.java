@@ -1,9 +1,6 @@
 package chypakk.model;
 
-import chypakk.config.BuildingDisplayConfig;
-import chypakk.config.GeneratorDisplayConfig;
-import chypakk.config.ResourceDisplayConfig;
-import chypakk.config.UnitDisplayConfig;
+import chypakk.config.*;
 import chypakk.model.building.Building;
 import chypakk.model.managers.BuildingManager;
 import chypakk.model.managers.GeneratorManager;
@@ -22,34 +19,17 @@ import java.util.concurrent.*;
 
 public class Castle implements GameObservable {
     private int health;
-
+    private final GameConfig config;
     private final ResourceManager resourceManager;
     private final GeneratorManager generatorManager;
     private final BuildingManager buildingManager;
     private final UnitManager unitManager;
     private final List<GameObserver> observers = new CopyOnWriteArrayList<>();
 
-    private final List<GeneratorDisplayConfig> generatorDisplayConfigs = Arrays.asList(
-            new GeneratorDisplayConfig("GoldMine", "шахт", 1),
-            new GeneratorDisplayConfig("Forest", "лесов", 2)
-    );
-    private final List<ResourceDisplayConfig> resourceDisplayConfigs = Arrays.asList(
-            new ResourceDisplayConfig("GOLD", "золото", 1),
-            new ResourceDisplayConfig("WOOD", "дерево", 2)
-    );
-    private final List<BuildingDisplayConfig> buildingDisplayConfigs = Arrays.asList(
-            new BuildingDisplayConfig("Marketplace", "Рынок"),
-            new BuildingDisplayConfig("Barracks", "Казармы")
-    );
-
-    private final List<UnitDisplayConfig> unitDisplayConfigs = Arrays.asList(
-            new UnitDisplayConfig("Soldier", "Рыцарь"),
-            new UnitDisplayConfig("Archer", "Лучник")
-    );
-
-    public Castle(int health) {
+    public Castle(int health, GameConfig config) {
         this.health = health;
-        this.resourceManager = new ResourceManager();
+        this.config = config;
+        this.resourceManager = new ResourceManager(config.resources());
         this.generatorManager = new GeneratorManager();
         this.buildingManager = new BuildingManager();
         this.unitManager = new UnitManager();
@@ -57,6 +37,10 @@ public class Castle implements GameObservable {
 
     public ScheduledFuture<?> scheduleResourceTask(Runnable task, long delay, long period, TimeUnit unit) {
         return generatorManager.scheduleResourceTask(task, delay, period, unit);
+    }
+
+    public GameConfig getConfig(){
+        return config;
     }
 
     public void addResource(Resource res) {
@@ -208,19 +192,19 @@ public class Castle implements GameObservable {
         }
     }
 
-    public List<GeneratorDisplayConfig> getGeneratorDisplayConfigs() {
-        return generatorDisplayConfigs;
+    public List<GeneratorConfig> getGeneratorConfigs(){
+        return config.generators();
     }
 
-    public List<ResourceDisplayConfig> getResourceDisplayConfigs() {
-        return resourceDisplayConfigs;
+    public List<ResourceConfig> getResourceConfigs(){
+        return config.resources();
     }
 
-    public List<BuildingDisplayConfig> getBuildingDisplayConfigs() {
-        return buildingDisplayConfigs;
+    public List<BuildingConfig> getBuildingConfigs(){
+        return config.buildings();
     }
 
-    public List<UnitDisplayConfig> getUnitDisplayConfigs() {
-        return unitDisplayConfigs;
+    public List<UnitConfig> getUnitConfigs(){
+        return config.units();
     }
 }
