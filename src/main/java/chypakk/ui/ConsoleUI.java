@@ -23,7 +23,7 @@ public class ConsoleUI implements GameUI {
 
     @Override
     public void start() {
-        while (castle.isAlive()) {
+        while (castle.isGameActive()) {
             menuSystem.start();
         }
     }

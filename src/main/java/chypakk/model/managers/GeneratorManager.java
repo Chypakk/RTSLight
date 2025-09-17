@@ -18,10 +18,8 @@ public class GeneratorManager implements GeneratorManagement {
 
     @Override
     public void addGenerator(ResourceGenerator generator) {
-        synchronized (generators) {
-            generators.add(generator);
-            generator.startGenerator();
-        }
+        generators.add(generator);
+        generator.startGenerator();
     }
 
     @Override
@@ -38,9 +36,7 @@ public class GeneratorManager implements GeneratorManagement {
 
     @Override
     public void removeGenerator(ResourceGenerator generator) {
-        synchronized (generators) {
-            generators.remove(generator);
-        }
+        generators.remove(generator);
     }
 
     @Override
@@ -55,23 +51,20 @@ public class GeneratorManager implements GeneratorManagement {
             Thread.currentThread().interrupt();
         }
 
-        synchronized (generators) {
-            generators.clear();
-        }
+        generators.clear();
+
         System.out.println("Все генераторы остановлены");
     }
 
     @Override
     public void printGenerators() {
-        synchronized (generators) {
-            if (generators.isEmpty()) {
-                System.out.println("Генераторов пока нет");
-                return;
-            }
-            System.out.println("\nАктивные генераторы:");
-            for (ResourceGenerator gen : generators) {
-                System.out.println("- " + gen.getClass().getSimpleName() + ", осталось: " + gen.getAmount());
-            }
+        if (generators.isEmpty()) {
+            System.out.println("Генераторов пока нет");
+            return;
+        }
+        System.out.println("\nАктивные генераторы:");
+        for (ResourceGenerator gen : generators) {
+            System.out.println("- " + gen.getClass().getSimpleName() + ", осталось: " + gen.getAmount());
         }
     }
 

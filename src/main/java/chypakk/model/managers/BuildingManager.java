@@ -10,9 +10,7 @@ public class BuildingManager implements BuildingManagement {
 
     @Override
     public void addBuilding(Building building) {
-        synchronized (buildings) {
             buildings.add(building);
-        }
     }
 
     @Override
@@ -33,7 +31,6 @@ public class BuildingManager implements BuildingManagement {
 
     @Override
     public void printBuildings() {
-        synchronized (buildings) {
             if (buildings.isEmpty()) {
                 System.out.println("Зданий пока нет");
                 return;
@@ -42,6 +39,5 @@ public class BuildingManager implements BuildingManagement {
             for (Building gen : buildings) {
                 System.out.println("- " + gen.getClass().getSimpleName());
             }
-        }
     }
 }

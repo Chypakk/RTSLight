@@ -8,6 +8,7 @@ import chypakk.model.factory.BuildingFactory;
 import chypakk.model.factory.GeneratorFactory;
 import chypakk.model.factory.UnitFactory;
 import chypakk.model.resources.ResourceType;
+import chypakk.ui.ConsoleUI;
 import chypakk.ui.MenuRender;
 
 import java.util.Map;
@@ -33,7 +34,7 @@ public class MenuSystem {
         rootMenu.addItem(1, buildConstructMenu());
         rootMenu.addItem(2, buildUseBuildingMenu());
 
-        if (renderer.getClass().getSimpleName().toLowerCase().contains("console")) {
+        if (renderer.getClass().equals(ConsoleUI.class)) {
             rootMenu.addItem(3, buildReportsMenu());
         }
 
@@ -153,7 +154,13 @@ public class MenuSystem {
     private Map<ResourceType, Integer> convertCost(Map<String, Integer> stringCost) {
         return stringCost.entrySet().stream()
                 .collect(Collectors.toMap(
-                        e -> ResourceType.valueOf(e.getKey()),
+                        e -> {
+                            ResourceType type = ResourceType.fromType(e.getKey());
+                            if (type == null) {
+                                throw new IllegalArgumentException("Неизвестный тип ресурса: " + e.getKey());
+                            }
+                            return type;
+                        },
                         Map.Entry::getValue
                 ));
     }

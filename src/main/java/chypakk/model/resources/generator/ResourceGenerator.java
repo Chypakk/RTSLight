@@ -20,6 +20,8 @@ public abstract class ResourceGenerator {
     private ScheduledFuture<?> taskFuture;
 
     public ResourceGenerator(int interval, int amountPerInterval, int totalAmount, GameState castle) {
+        if (interval <= 0 || amountPerInterval <= 0 || totalAmount <= 0) throw new IllegalArgumentException("Некорректные данные генератора");
+
         this.castle = castle;
         this.amountPerInterval = amountPerInterval;
         this.interval = interval;

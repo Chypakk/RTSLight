@@ -188,12 +188,12 @@ public class Castle implements GameState {
 
     @Override
     public boolean isAlive() {
-        return health > 0 && isGameActive;
+        return health > 0;
     }
 
     @Override
     public boolean isGameActive() {
-        return isGameActive;
+        return isGameActive && isAlive();
     }
 
     @Override

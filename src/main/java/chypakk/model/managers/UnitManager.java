@@ -10,29 +10,23 @@ public class UnitManager implements UnitManagement {
 
     @Override
     public void addUnit(Unit unit) {
-        synchronized (units) {
-            units.add(unit);
-        }
+        units.add(unit);
     }
 
     @Override
     public void removeUnit(Unit unit) {
-        synchronized (units) {
-            units.remove(unit);
-        }
+        units.remove(unit);
     }
 
     @Override
     public void printUnits() {
-        synchronized (units) {
-            if (units.isEmpty()) {
-                System.out.println("Юнитов пока нет");
-                return;
-            }
-            System.out.println("\nЮниты:");
-            for (Unit unit : units) {
-                System.out.println(unit);
-            }
+        if (units.isEmpty()) {
+            System.out.println("Юнитов пока нет");
+            return;
+        }
+        System.out.println("\nЮниты:");
+        for (Unit unit : units) {
+            System.out.println(unit);
         }
     }
 
