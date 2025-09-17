@@ -65,9 +65,11 @@ public class LanternaUI implements GameUI {
             screen.startScreen();
             init();
 
-            while (castle.isAlive()) {
-                menuSystem.start();
-            }
+            menuSystem.start();
+
+//            while (castle.isAlive()) {
+//                menuSystem.start();
+//            }
 
             screen.stopScreen();
         } catch (IOException e) {
