@@ -22,7 +22,7 @@ public class MenuGroup implements MenuComponent{
 
     @Override
     public void execute(GameState castle) {
-        while (true) {
+        while (castle.isGameActive()) {
             Map<Integer, String> options = buildVisibleOptions(castle);
 
             if (!title.equals("Главное меню")) {

@@ -139,7 +139,7 @@ public class MenuSystem {
 
     public void start() {
         MenuComponent menu = buildRootMenu();
-        while (castle.isAlive()) {
+        while (castle.isGameActive()) {
             menu.execute(castle);
         }
     }

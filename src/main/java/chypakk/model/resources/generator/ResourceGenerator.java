@@ -65,7 +65,7 @@ public abstract class ResourceGenerator {
 
     public void stopGenerator(){
         if (taskFuture != null) {
-            taskFuture.cancel(false);
+            taskFuture.cancel(true);
         }
         castle.removeGenerator(this);
     }

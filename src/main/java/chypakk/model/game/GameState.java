@@ -42,6 +42,8 @@ public interface GameState extends GameObservable {
     int getHealth();
     void takeDamage(int damage);
     boolean isAlive();
+    boolean isGameActive();
+    void setGameActive(boolean active);
 
     void sendMessage(String message);
     GameConfig getConfig();

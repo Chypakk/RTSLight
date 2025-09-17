@@ -7,7 +7,7 @@ public class ExitCommand implements GameCommand{
     public void execute(GameState castle) {
         System.out.println("Выход из игры...");
         castle.stopAllGenerators();
-
-        System.exit(0);
+        castle.setGameActive(false);
+//        System.exit(0);
     }
 }

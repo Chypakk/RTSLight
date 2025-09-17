@@ -15,6 +15,8 @@ import java.util.concurrent.*;
 
 public class Castle implements GameState {
     private int health;
+    private boolean isGameActive;
+
     private final GameConfig config;
     private final ResourceManagement resourceManager;
     private final GeneratorManagement generatorManager;
@@ -24,6 +26,7 @@ public class Castle implements GameState {
 
     public Castle(int health, GameConfig config) {
         this.health = health;
+        this.isGameActive = true;
         this.config = config;
         this.resourceManager = new ResourceManager(config.resources());
         this.generatorManager = new GeneratorManager();
@@ -180,7 +183,17 @@ public class Castle implements GameState {
 
     @Override
     public boolean isAlive() {
-        return health > 0;
+        return health > 0 && isGameActive;
+    }
+
+    @Override
+    public boolean isGameActive() {
+        return isGameActive;
+    }
+
+    @Override
+    public void setGameActive(boolean active) {
+        this.isGameActive = active;
     }
 
     @Override

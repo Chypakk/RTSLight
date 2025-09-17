@@ -22,8 +22,8 @@ import java.util.Map;
 
 public class LanternaUI implements GameUI {
 
-    private static final int WIDTH = 100; // 80
-    private static final int HEIGHT = 30; // 24
+    private static final int WIDTH_SCREEN = 100; // 80 - default width screen
+    private static final int HEIGHT_SCREEN = 30; // 24 - default height screen
 
     private final Screen screen;
     private final TextGraphics graphics;
@@ -38,7 +38,7 @@ public class LanternaUI implements GameUI {
         castle.addObserver(this);
 
         screen = new TerminalScreen(new DefaultTerminalFactory()
-                .setInitialTerminalSize(new TerminalSize(WIDTH, HEIGHT))
+                .setInitialTerminalSize(new TerminalSize(WIDTH_SCREEN, HEIGHT_SCREEN))
                 .setForceAWTOverSwing(true)
                 .setTerminalEmulatorFontConfiguration(
                         SwingTerminalFontConfiguration.newInstance(new Font("Consolas", Font.PLAIN, 14))
