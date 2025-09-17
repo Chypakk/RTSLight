@@ -3,7 +3,7 @@ package chypakk.composite;
 import chypakk.composite.command.*;
 import chypakk.config.ExchangeConfig;
 import chypakk.config.UnitConfig;
-import chypakk.model.GameState;
+import chypakk.model.game.GameState;
 import chypakk.model.factory.BuildingFactory;
 import chypakk.model.factory.GeneratorFactory;
 import chypakk.model.factory.UnitFactory;

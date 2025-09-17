@@ -1,7 +1,6 @@
 package chypakk.composite.command;
 
-import chypakk.model.Castle;
-import chypakk.model.GameState;
+import chypakk.model.game.GameState;
 import chypakk.model.resources.ResourceType;
 import chypakk.model.units.Unit;
 

@@ -1,7 +1,6 @@
 package chypakk.composite;
 
-import chypakk.model.Castle;
-import chypakk.model.GameState;
+import chypakk.model.game.GameState;
 import chypakk.ui.MenuRender;
 
 import java.util.LinkedHashMap;

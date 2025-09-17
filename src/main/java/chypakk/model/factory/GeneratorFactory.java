@@ -2,7 +2,7 @@ package chypakk.model.factory;
 
 import chypakk.config.GameConfig;
 import chypakk.config.GeneratorConfig;
-import chypakk.model.GameState;
+import chypakk.model.game.GameState;
 import chypakk.model.resources.generator.Forest;
 import chypakk.model.resources.generator.GoldMine;
 import chypakk.model.resources.generator.ResourceGenerator;

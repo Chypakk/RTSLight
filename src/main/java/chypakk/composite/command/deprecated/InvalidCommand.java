@@ -1,8 +1,7 @@
 package chypakk.composite.command.deprecated;
 
 import chypakk.composite.command.GameCommand;
-import chypakk.model.Castle;
-import chypakk.model.GameState;
+import chypakk.model.game.GameState;
 
 @Deprecated
 public class InvalidCommand implements GameCommand {

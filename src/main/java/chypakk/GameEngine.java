@@ -2,8 +2,8 @@ package chypakk;
 
 import chypakk.config.ConfigLoader;
 import chypakk.config.GameConfig;
-import chypakk.model.Castle;
-import chypakk.model.GameState;
+import chypakk.model.game.Castle;
+import chypakk.model.game.GameState;
 import chypakk.model.factory.GeneratorFactory;
 import chypakk.ui.GameUI;
 import chypakk.ui.LanternaUI;

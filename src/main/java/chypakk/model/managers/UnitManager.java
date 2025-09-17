@@ -5,21 +5,24 @@ import chypakk.model.units.Unit;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class UnitManager {
+public class UnitManager implements UnitManagement {
     private final List<Unit> units = new CopyOnWriteArrayList<>();
 
+    @Override
     public void addUnit(Unit unit) {
         synchronized (units) {
             units.add(unit);
         }
     }
 
+    @Override
     public void removeUnit(Unit unit) {
         synchronized (units) {
             units.remove(unit);
         }
     }
 
+    @Override
     public void printUnits() {
         synchronized (units) {
             if (units.isEmpty()) {
@@ -33,10 +36,12 @@ public class UnitManager {
         }
     }
 
+    @Override
     public List<Unit> getUnits() {
         return units;
     }
 
+    @Override
     public List<Unit> getUnits(String type) {
         return units.stream().filter(unit -> unit.getName().equals(type)).toList();
     }

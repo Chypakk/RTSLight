@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ResourceManager {
+public class ResourceManager implements ResourceManagement {
     private final Map<ResourceType, Resource> resources = new ConcurrentHashMap<>();
 
     public ResourceManager(List<ResourceConfig> resources) {
@@ -20,6 +20,7 @@ public class ResourceManager {
         }
     }
 
+    @Override
     public void addResource(Resource res) {
         synchronized (resources) {
             Resource existing = resources.get(res.getType());
@@ -31,17 +32,20 @@ public class ResourceManager {
         }
     }
 
+    @Override
     public int getResource(ResourceType type) {
         Resource resource = resources.get(type);
         return resource != null ? resource.getAmount() : 0;
     }
 
+    @Override
     public void removeResource(ResourceType type, int amount) {
         synchronized (resources) {
             resources.get(type).removeAmount(amount);
         }
     }
 
+    @Override
     public void printResources() {
         synchronized (resources) {
             if (resources.isEmpty()) {

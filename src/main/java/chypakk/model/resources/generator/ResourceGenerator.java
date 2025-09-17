@@ -1,13 +1,10 @@
 package chypakk.model.resources.generator;
 
-import chypakk.model.Castle;
-import chypakk.model.GameState;
+import chypakk.model.game.GameState;
 import chypakk.model.resources.Resource;
 import chypakk.observer.event.Action;
 import chypakk.observer.event.GeneratorEvent;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;

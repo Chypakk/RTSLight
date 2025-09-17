@@ -1,6 +1,6 @@
 package chypakk.model.resources.generator;
 
-import chypakk.model.GameState;
+import chypakk.model.game.GameState;
 import chypakk.model.resources.Resource;
 import chypakk.model.resources.Wood;
 

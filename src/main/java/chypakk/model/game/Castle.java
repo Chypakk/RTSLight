@@ -1,11 +1,8 @@
-package chypakk.model;
+package chypakk.model.game;
 
 import chypakk.config.*;
 import chypakk.model.building.Building;
-import chypakk.model.managers.BuildingManager;
-import chypakk.model.managers.GeneratorManager;
-import chypakk.model.managers.ResourceManager;
-import chypakk.model.managers.UnitManager;
+import chypakk.model.managers.*;
 import chypakk.model.resources.ResourceType;
 import chypakk.model.resources.generator.ResourceGenerator;
 import chypakk.model.resources.Resource;
@@ -19,10 +16,10 @@ import java.util.concurrent.*;
 public class Castle implements GameState {
     private int health;
     private final GameConfig config;
-    private final ResourceManager resourceManager;
-    private final GeneratorManager generatorManager;
-    private final BuildingManager buildingManager;
-    private final UnitManager unitManager;
+    private final ResourceManagement resourceManager;
+    private final GeneratorManagement generatorManager;
+    private final BuildingManagement buildingManager;
+    private final UnitManagement unitManager;
     private final List<GameObserver> observers = new CopyOnWriteArrayList<>();
 
     public Castle(int health, GameConfig config) {

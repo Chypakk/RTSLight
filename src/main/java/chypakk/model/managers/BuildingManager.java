@@ -5,28 +5,33 @@ import chypakk.model.building.Building;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class BuildingManager {
+public class BuildingManager implements BuildingManagement {
     private final Set<Building> buildings = ConcurrentHashMap.newKeySet();
 
+    @Override
     public void addBuilding(Building building) {
         synchronized (buildings) {
             buildings.add(building);
         }
     }
 
+    @Override
     public boolean haveBuilding(String name) {
         Building neededBuilding = buildings.stream().filter(build -> build.getName().equals(name)).findFirst().orElse(null);
         return neededBuilding != null;
     }
 
+    @Override
     public boolean haveBuilding(Building building) {
         return buildings.contains(building);
     }
 
+    @Override
     public Set<Building> getBuildings() {
         return buildings;
     }
 
+    @Override
     public void printBuildings() {
         synchronized (buildings) {
             if (buildings.isEmpty()) {

@@ -1,7 +1,7 @@
 package chypakk.ui;
 
 import chypakk.composite.MenuSystem;
-import chypakk.model.GameState;
+import chypakk.model.game.GameState;
 import chypakk.observer.event.BuildingEvent;
 import chypakk.observer.event.GameEvent;
 import chypakk.observer.event.GeneratorEvent;

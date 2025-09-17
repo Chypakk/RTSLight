@@ -1,7 +1,7 @@
 package chypakk.composite;
 
 import chypakk.composite.command.GameCommand;
-import chypakk.model.GameState;
+import chypakk.model.game.GameState;
 
 import java.util.function.Predicate;
 

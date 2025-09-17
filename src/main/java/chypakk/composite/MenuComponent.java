@@ -1,6 +1,6 @@
 package chypakk.composite;
 
-import chypakk.model.GameState;
+import chypakk.model.game.GameState;
 
 public interface MenuComponent {
     void execute(GameState castle);

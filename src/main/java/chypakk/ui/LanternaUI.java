@@ -2,7 +2,7 @@ package chypakk.ui;
 
 import chypakk.composite.MenuSystem;
 import chypakk.config.*;
-import chypakk.model.GameState;
+import chypakk.model.game.GameState;
 import chypakk.model.resources.ResourceType;
 import chypakk.observer.event.*;
 import com.googlecode.lanterna.TerminalSize;
