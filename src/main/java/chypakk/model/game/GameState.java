@@ -9,12 +9,13 @@ import chypakk.model.units.Unit;
 import chypakk.observer.GameObservable;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public interface GameState extends GameObservable {
     ScheduledFuture<?> scheduleResourceTask(Runnable task, long delay, long period, TimeUnit unit);
-
+    boolean checkCostAndRemoveResources(Map<ResourceType, Integer> cost);
 
     void addResource(Resource res);
     void removeResource(ResourceType type, int amount);
@@ -46,8 +47,8 @@ public interface GameState extends GameObservable {
     void setGameActive(boolean active);
 
     void sendMessage(String message);
-    GameConfig getConfig();
 
+    GameConfig getConfig();
     List<GeneratorConfig> getGeneratorConfigs();
     List<ResourceConfig> getResourceConfigs();
     List<BuildingConfig> getBuildingConfigs();

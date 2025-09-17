@@ -4,6 +4,7 @@ import chypakk.config.ResourceConfig;
 import chypakk.model.resources.Resource;
 import chypakk.model.resources.ResourceType;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -56,5 +57,22 @@ public class ResourceManager implements ResourceManagement {
                 System.out.println(res);
             }
         }
+    }
+
+    @Override
+    public boolean tryRemoveResource(Map<ResourceType, Integer> cost) {
+        for (var entry : cost.entrySet()) {
+            ResourceType type = entry.getKey();
+            int required = entry.getValue();
+            if (resources.get(type).getAmount() < required) {
+                return false;
+            }
+        }
+
+        for (var entry : cost.entrySet()) {
+            removeResource(entry.getKey(), entry.getValue());
+        }
+
+        return true;
     }
 }

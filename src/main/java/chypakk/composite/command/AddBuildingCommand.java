@@ -19,19 +19,7 @@ public class AddBuildingCommand implements GameCommand {
     @Override
     public void execute(GameState castle) {
         if (castle.haveBuilding(building)) return;
-
-        for (var entry : cost.entrySet()) {
-            ResourceType type = entry.getKey();
-            int required = entry.getValue();
-            if (castle.getResource(type) < required) {
-                castle.sendMessage("Недостаточно ресурса: " + type + ". Нужно: " + required);
-                return;
-            }
-        }
-
-        for (Map.Entry<ResourceType, Integer> entry : cost.entrySet()) {
-            castle.removeResource(entry.getKey(), entry.getValue());
-        }
+        if (castle.checkCostAndRemoveResources(cost)) return;
 
         castle.addBuilding(building);
     }

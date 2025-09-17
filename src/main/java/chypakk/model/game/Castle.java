@@ -15,7 +15,7 @@ import java.util.concurrent.*;
 
 public class Castle implements GameState {
     private int health;
-    private boolean isGameActive;
+    private volatile boolean isGameActive;
 
     private final GameConfig config;
     private final ResourceManagement resourceManager;
@@ -37,6 +37,11 @@ public class Castle implements GameState {
     @Override
     public ScheduledFuture<?> scheduleResourceTask(Runnable task, long delay, long period, TimeUnit unit) {
         return generatorManager.scheduleResourceTask(task, delay, period, unit);
+    }
+
+    @Override
+    public boolean checkCostAndRemoveResources(Map<ResourceType, Integer> cost) {
+        return !resourceManager.tryRemoveResource(cost);
     }
 
     @Override
