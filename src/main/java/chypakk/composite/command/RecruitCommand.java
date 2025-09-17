@@ -1,6 +1,7 @@
 package chypakk.composite.command;
 
 import chypakk.model.Castle;
+import chypakk.model.GameState;
 import chypakk.model.resources.ResourceType;
 import chypakk.model.units.Unit;
 
@@ -18,7 +19,7 @@ public class RecruitCommand implements GameCommand{
 
 
     @Override
-    public void execute(Castle castle) {
+    public void execute(GameState castle) {
         for (var entry : cost.entrySet()) {
             ResourceType type = entry.getKey();
             int required = entry.getValue();

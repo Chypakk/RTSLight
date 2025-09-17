@@ -1,6 +1,7 @@
 package chypakk.model.resources.generator;
 
 import chypakk.model.Castle;
+import chypakk.model.GameState;
 import chypakk.model.resources.Resource;
 import chypakk.observer.event.Action;
 import chypakk.observer.event.GeneratorEvent;
@@ -14,14 +15,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 public abstract class ResourceGenerator {
     protected final int interval;
     protected final int amountPerInterval;
-    protected final Castle castle;
+    protected final GameState castle;
     protected Status status;
 
     protected AtomicInteger totalAmount;
 
     private ScheduledFuture<?> taskFuture;
 
-    public ResourceGenerator(int interval, int amountPerInterval, int totalAmount, Castle castle) {
+    public ResourceGenerator(int interval, int amountPerInterval, int totalAmount, GameState castle) {
         this.castle = castle;
         this.amountPerInterval = amountPerInterval;
         this.interval = interval;

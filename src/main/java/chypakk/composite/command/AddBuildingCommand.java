@@ -1,6 +1,7 @@
 package chypakk.composite.command;
 
 import chypakk.model.Castle;
+import chypakk.model.GameState;
 import chypakk.model.building.Building;
 import chypakk.model.resources.ResourceType;
 
@@ -17,7 +18,7 @@ public class AddBuildingCommand implements GameCommand {
     }
 
     @Override
-    public void execute(Castle castle) {
+    public void execute(GameState castle) {
         if (castle.haveBuilding(building)) return;
 
         for (var entry : cost.entrySet()) {

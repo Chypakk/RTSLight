@@ -1,10 +1,11 @@
 package chypakk.composite.command;
 
 import chypakk.model.Castle;
+import chypakk.model.GameState;
 
 public class ExitCommand implements GameCommand{
     @Override
-    public void execute(Castle castle) {
+    public void execute(GameState castle) {
         System.out.println("Выход из игры...");
         castle.stopAllGenerators();
 

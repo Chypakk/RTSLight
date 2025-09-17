@@ -2,6 +2,7 @@ package chypakk.composite.command.deprecated;
 
 import chypakk.composite.command.GameCommand;
 import chypakk.model.Castle;
+import chypakk.model.GameState;
 import chypakk.model.resources.generator.GoldMine;
 import chypakk.model.resources.generator.ResourceGenerator;
 
@@ -10,8 +11,9 @@ import static chypakk.model.resources.ResourceType.WOOD;
 
 @Deprecated
 public class AddGoldMineCommand implements GameCommand {
+
     @Override
-    public void execute(Castle castle) {
+    public void execute(GameState castle) {
         if (castle.getResource(GOLD) >= 50 && castle.getResource(WOOD) >= 60) {
 
             castle.removeResource(GOLD, 50);

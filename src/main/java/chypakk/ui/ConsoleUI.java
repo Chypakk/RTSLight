@@ -1,7 +1,7 @@
 package chypakk.ui;
 
 import chypakk.composite.MenuSystem;
-import chypakk.model.Castle;
+import chypakk.model.GameState;
 import chypakk.observer.event.BuildingEvent;
 import chypakk.observer.event.GameEvent;
 import chypakk.observer.event.GeneratorEvent;
@@ -11,11 +11,11 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class ConsoleUI implements GameUI {
-    private final Castle castle;
+    private final GameState castle;
     private final MenuSystem menuSystem;
     private final Scanner scanner = new Scanner(System.in);
 
-    public ConsoleUI(Castle castle) {
+    public ConsoleUI(GameState castle) {
         this.castle = castle;
         this.menuSystem = new MenuSystem(castle, this);;
         castle.addObserver(this);

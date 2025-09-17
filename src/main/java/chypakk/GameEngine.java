@@ -3,6 +3,7 @@ package chypakk;
 import chypakk.config.ConfigLoader;
 import chypakk.config.GameConfig;
 import chypakk.model.Castle;
+import chypakk.model.GameState;
 import chypakk.model.factory.GeneratorFactory;
 import chypakk.ui.GameUI;
 import chypakk.ui.LanternaUI;
@@ -12,7 +13,7 @@ import java.io.IOException;
 //todo написать про паттерны в Obsidian
 public class GameEngine {
 
-    private final Castle castle;
+    private final GameState castle;
     private final GameUI gameUI;
     private final GameConfig config;
 

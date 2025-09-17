@@ -3,7 +3,7 @@ package chypakk.composite;
 import chypakk.composite.command.*;
 import chypakk.config.ExchangeConfig;
 import chypakk.config.UnitConfig;
-import chypakk.model.Castle;
+import chypakk.model.GameState;
 import chypakk.model.factory.BuildingFactory;
 import chypakk.model.factory.GeneratorFactory;
 import chypakk.model.factory.UnitFactory;
@@ -14,13 +14,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class MenuSystem {
-    private final Castle castle;
+    private final GameState castle;
     private final MenuRender renderer;
     private final GeneratorFactory generatorFactory;
     private final BuildingFactory buildingFactory;
     private final UnitFactory unitFactory;
 
-    public MenuSystem(Castle castle, MenuRender renderer) {
+    public MenuSystem(GameState castle, MenuRender renderer) {
         this.castle = castle;
         this.renderer = renderer;
         this.generatorFactory = new GeneratorFactory(castle.getConfig());

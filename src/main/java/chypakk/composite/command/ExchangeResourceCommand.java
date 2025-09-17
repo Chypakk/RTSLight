@@ -1,6 +1,7 @@
 package chypakk.composite.command;
 
 import chypakk.model.Castle;
+import chypakk.model.GameState;
 import chypakk.model.resources.ResourceType;
 import chypakk.model.resources.ResourcesBuilder;
 
@@ -19,7 +20,7 @@ public class ExchangeResourceCommand implements GameCommand{
     }
 
     @Override
-    public void execute(Castle castle) {
+    public void execute(GameState castle) {
         if (!castle.haveBuilding("Рынок")) {
             castle.sendMessage("Не построен рынок!");
             return;

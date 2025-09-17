@@ -1,7 +1,7 @@
 package chypakk.composite.command;
 
-import chypakk.model.Castle;
+import chypakk.model.GameState;
 
 public interface GameCommand {
-    void execute(Castle castle);
+    void execute(GameState gameState);
 }

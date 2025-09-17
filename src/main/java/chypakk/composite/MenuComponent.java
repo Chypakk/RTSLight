@@ -1,9 +1,9 @@
 package chypakk.composite;
 
-import chypakk.model.Castle;
+import chypakk.model.GameState;
 
 public interface MenuComponent {
-    void execute(Castle castle);
+    void execute(GameState castle);
     String getTitle();
-    boolean isVisible(Castle castle);
+    boolean isVisible(GameState castle);
 }

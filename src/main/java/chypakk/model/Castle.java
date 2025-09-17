@@ -10,14 +10,13 @@ import chypakk.model.resources.ResourceType;
 import chypakk.model.resources.generator.ResourceGenerator;
 import chypakk.model.resources.Resource;
 import chypakk.model.units.Unit;
-import chypakk.observer.GameObservable;
 import chypakk.observer.GameObserver;
 import chypakk.observer.event.*;
 
 import java.util.*;
 import java.util.concurrent.*;
 
-public class Castle implements GameObservable {
+public class Castle implements GameState {
     private int health;
     private final GameConfig config;
     private final ResourceManager resourceManager;
@@ -35,14 +34,17 @@ public class Castle implements GameObservable {
         this.unitManager = new UnitManager();
     }
 
+    @Override
     public ScheduledFuture<?> scheduleResourceTask(Runnable task, long delay, long period, TimeUnit unit) {
         return generatorManager.scheduleResourceTask(task, delay, period, unit);
     }
 
-    public GameConfig getConfig(){
+    @Override
+    public GameConfig getConfig() {
         return config;
     }
 
+    @Override
     public void addResource(Resource res) {
         resourceManager.addResource(res);
 
@@ -51,6 +53,7 @@ public class Castle implements GameObservable {
         ));
     }
 
+    @Override
     public void removeResource(ResourceType type, int amount) {
         resourceManager.removeResource(type, amount);
 
@@ -59,14 +62,17 @@ public class Castle implements GameObservable {
         ));
     }
 
+    @Override
     public int getResource(ResourceType type) {
         return resourceManager.getResource(type);
     }
 
+    @Override
     public void printResources() {
         resourceManager.printResources();
     }
 
+    @Override
     public void addGenerator(ResourceGenerator generator) {
         generatorManager.addGenerator(generator);
 
@@ -76,14 +82,17 @@ public class Castle implements GameObservable {
         ));
     }
 
+    @Override
     public List<ResourceGenerator> getGenerators(String type) {
         return generatorManager.getGenerators(type);
     }
 
+    @Override
     public int getAlmostRemovedCount(String generatorType) {
         return generatorManager.getAlmostRemovedCount(generatorType);
     }
 
+    @Override
     public void removeGenerator(ResourceGenerator generator) {
         generatorManager.removeGenerator(generator);
 
@@ -93,14 +102,17 @@ public class Castle implements GameObservable {
         ));
     }
 
+    @Override
     public void stopAllGenerators() {
         generatorManager.stopAllGenerators();
     }
 
+    @Override
     public void printGenerators() {
         generatorManager.printGenerators();
     }
 
+    @Override
     public void addBuilding(Building building) {
         buildingManager.addBuilding(building);
 
@@ -109,18 +121,22 @@ public class Castle implements GameObservable {
         ));
     }
 
+    @Override
     public boolean haveBuilding(String name) {
         return buildingManager.haveBuilding(name);
     }
 
+    @Override
     public boolean haveBuilding(Building building) {
         return buildingManager.haveBuilding(building);
     }
 
+    @Override
     public void printBuildings() {
         buildingManager.printBuildings();
     }
 
+    @Override
     public void addUnit(Unit unit) {
         unitManager.addUnit(unit);
 
@@ -130,6 +146,7 @@ public class Castle implements GameObservable {
         ));
     }
 
+    @Override
     public void removeUnit(Unit unit) {
         unitManager.removeUnit(unit);
 
@@ -139,28 +156,43 @@ public class Castle implements GameObservable {
         ));
     }
 
+    @Override
     public void printUnits() {
         unitManager.printUnits();
     }
 
+    @Override
     public List<Unit> getUnits() {
         return unitManager.getUnits();
     }
 
+    @Override
     public List<Unit> getUnits(String type) {
         return unitManager.getUnits(type);
     }
 
+    @Override
     public int getHealth() {
         return health;
     }
 
+    @Override
     public void takeDamage(int damage) {
         this.health -= damage;
     }
 
+    @Override
     public boolean isAlive() {
         return health > 0;
+    }
+
+    @Override
+    public void sendMessage(String message) {
+        synchronized (observers) {
+            for (GameObserver observer : observers) {
+                observer.onMessage(message);
+            }
+        }
     }
 
     @Override
@@ -184,27 +216,19 @@ public class Castle implements GameObservable {
         }
     }
 
-    public void sendMessage(String message) {
-        synchronized (observers) {
-            for (GameObserver observer : observers) {
-                observer.onMessage(message);
-            }
-        }
-    }
-
-    public List<GeneratorConfig> getGeneratorConfigs(){
+    public List<GeneratorConfig> getGeneratorConfigs() {
         return config.generators();
     }
 
-    public List<ResourceConfig> getResourceConfigs(){
+    public List<ResourceConfig> getResourceConfigs() {
         return config.resources();
     }
 
-    public List<BuildingConfig> getBuildingConfigs(){
+    public List<BuildingConfig> getBuildingConfigs() {
         return config.buildings();
     }
 
-    public List<UnitConfig> getUnitConfigs(){
+    public List<UnitConfig> getUnitConfigs() {
         return config.units();
     }
 }

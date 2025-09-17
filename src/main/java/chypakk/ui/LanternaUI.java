@@ -2,7 +2,7 @@ package chypakk.ui;
 
 import chypakk.composite.MenuSystem;
 import chypakk.config.*;
-import chypakk.model.Castle;
+import chypakk.model.GameState;
 import chypakk.model.resources.ResourceType;
 import chypakk.observer.event.*;
 import com.googlecode.lanterna.TerminalSize;
@@ -30,9 +30,9 @@ public class LanternaUI implements GameUI {
     private final UiLayout uiLayout;
 
     private final MenuSystem menuSystem;
-    private final Castle castle;
+    private final GameState castle;
 
-    public LanternaUI(Castle castle) throws IOException {
+    public LanternaUI(GameState castle) throws IOException {
         this.castle = castle;
         this.menuSystem = new MenuSystem(castle, this);
         castle.addObserver(this);
@@ -63,13 +63,9 @@ public class LanternaUI implements GameUI {
     public void start() {
         try {
             screen.startScreen();
+
             init();
-
             menuSystem.start();
-
-//            while (castle.isAlive()) {
-//                menuSystem.start();
-//            }
 
             screen.stopScreen();
         } catch (IOException e) {

@@ -1,6 +1,7 @@
 package chypakk.composite;
 
 import chypakk.model.Castle;
+import chypakk.model.GameState;
 import chypakk.ui.MenuRender;
 
 import java.util.LinkedHashMap;
@@ -21,7 +22,7 @@ public class MenuGroup implements MenuComponent{
     }
 
     @Override
-    public void execute(Castle castle) {
+    public void execute(GameState castle) {
         while (true) {
             Map<Integer, String> options = buildVisibleOptions(castle);
 
@@ -45,7 +46,7 @@ public class MenuGroup implements MenuComponent{
         }
     }
 
-    private Map<Integer, String> buildVisibleOptions(Castle castle) {
+    private Map<Integer, String> buildVisibleOptions(GameState castle) {
         Map<Integer, String> options = new LinkedHashMap<>();
         int counter = 1;
 
@@ -64,7 +65,7 @@ public class MenuGroup implements MenuComponent{
         return options;
     }
 
-    private MenuComponent getVisibleItem(Castle castle, int choice) {
+    private MenuComponent getVisibleItem(GameState castle, int choice) {
         int counter = 1;
         for (MenuComponent component : items.values()) {
             if (component.isVisible(castle)) {
@@ -85,7 +86,7 @@ public class MenuGroup implements MenuComponent{
     }
 
     @Override
-    public boolean isVisible(Castle castle) {
+    public boolean isVisible(GameState castle) {
         return items.values().stream().anyMatch(item -> item.isVisible(castle));
     }
 }

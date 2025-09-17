@@ -2,7 +2,7 @@ package chypakk.model.factory;
 
 import chypakk.config.GameConfig;
 import chypakk.config.GeneratorConfig;
-import chypakk.model.Castle;
+import chypakk.model.GameState;
 import chypakk.model.resources.generator.Forest;
 import chypakk.model.resources.generator.GoldMine;
 import chypakk.model.resources.generator.ResourceGenerator;
@@ -14,7 +14,7 @@ public class GeneratorFactory {
         this.config = config;
     }
     
-    public ResourceGenerator createGenerator(String type, Castle castle){
+    public ResourceGenerator createGenerator(String type, GameState castle){
         GeneratorConfig generatorConfig = getGeneratorConfig(type);
 
         return switch (type) {
