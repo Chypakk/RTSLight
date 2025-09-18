@@ -12,9 +12,10 @@ import chypakk.observer.event.*;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Castle implements GameState {
-    private int health;
+    private AtomicInteger health;
     private volatile boolean isGameActive;
 
     private final GameConfig config;
@@ -25,7 +26,7 @@ public class Castle implements GameState {
     private final List<GameObserver> observers = new CopyOnWriteArrayList<>();
 
     public Castle(int health, GameConfig config) {
-        this.health = health;
+        this.health = new AtomicInteger(health);
         this.isGameActive = true;
         this.config = config;
         this.resourceManager = new ResourceManager(config.resources());
@@ -40,8 +41,8 @@ public class Castle implements GameState {
     }
 
     @Override
-    public boolean checkCostAndRemoveResources(Map<ResourceType, Integer> cost) {
-        return !resourceManager.tryRemoveResource(cost);
+    public boolean trySpendResources(Map<ResourceType, Integer> cost) {
+        return resourceManager.tryRemoveResource(cost);
     }
 
     @Override
@@ -178,17 +179,17 @@ public class Castle implements GameState {
 
     @Override
     public int getHealth() {
-        return health;
+        return health.get();
     }
 
     @Override
     public void takeDamage(int damage) {
-        this.health -= damage;
+        this.health.addAndGet(-damage);
     }
 
     @Override
     public boolean isAlive() {
-        return health > 0;
+        return health.get() > 0;
     }
 
     @Override
@@ -229,21 +230,5 @@ public class Castle implements GameState {
         for (GameObserver observer : observers) {
             observer.onEvent(event);
         }
-    }
-
-    public List<GeneratorConfig> getGeneratorConfigs() {
-        return config.generators();
-    }
-
-    public List<ResourceConfig> getResourceConfigs() {
-        return config.resources();
-    }
-
-    public List<BuildingConfig> getBuildingConfigs() {
-        return config.buildings();
-    }
-
-    public List<UnitConfig> getUnitConfigs() {
-        return config.units();
     }
 }

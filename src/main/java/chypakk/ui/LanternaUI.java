@@ -99,7 +99,7 @@ public class LanternaUI implements GameUI {
         uiLayout.renderItemList(
                 graphics,
                 UiRegion.UNIT_PANEL,
-                castle.getUnitConfigs(),
+                castle.getConfig().units(),
                 UnitConfig::label,
                 config -> castle.getUnits(config.label()).size(),
                 config -> 0
@@ -110,7 +110,7 @@ public class LanternaUI implements GameUI {
         uiLayout.renderItemList(
                 graphics,
                 UiRegion.BUILDING_PANEL,
-                castle.getBuildingConfigs(),
+                castle.getConfig().buildings(),
                 BuildingConfig::label,
                 config -> castle.haveBuilding(config.label())
         );
@@ -120,7 +120,7 @@ public class LanternaUI implements GameUI {
         uiLayout.renderItemList(
                 graphics,
                 UiRegion.GENERATOR_PANEL,
-                castle.getGeneratorConfigs(),
+                castle.getConfig().generators(),
                 GeneratorConfig::label,
                 config -> castle.getGenerators(config.type()).size(),
                 config -> castle.getAlmostRemovedCount(config.type())
@@ -131,7 +131,7 @@ public class LanternaUI implements GameUI {
         uiLayout.renderItemList(
                 graphics,
                 UiRegion.RESOURCE_PANEL,
-                castle.getResourceConfigs(),
+                castle.getConfig().resources(),
                 ResourceConfig::label,
                 config -> castle.getResource(ResourceType.fromType(config.type())),
                 config -> 0

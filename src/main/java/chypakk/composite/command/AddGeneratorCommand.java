@@ -19,9 +19,9 @@ public class AddGeneratorCommand implements GameCommand {
 
     @Override
     public void execute(GameState castle) {
-        if (castle.checkCostAndRemoveResources(cost)) return;
-
-        ResourceGenerator generator = generatorFactory.get();
-        castle.addGenerator(generator);
+        if (castle.trySpendResources(cost)) {
+            ResourceGenerator generator = generatorFactory.get();
+            castle.addGenerator(generator);
+        }
     }
 }

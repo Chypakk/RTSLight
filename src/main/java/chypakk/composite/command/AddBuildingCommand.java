@@ -19,8 +19,9 @@ public class AddBuildingCommand implements GameCommand {
     @Override
     public void execute(GameState castle) {
         if (castle.haveBuilding(building)) return;
-        if (castle.checkCostAndRemoveResources(cost)) return;
 
-        castle.addBuilding(building);
+        if (castle.trySpendResources(cost)) {
+            castle.addBuilding(building);
+        }
     }
 }

@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 public interface GameState extends GameObservable {
     ScheduledFuture<?> scheduleResourceTask(Runnable task, long delay, long period, TimeUnit unit);
-    boolean checkCostAndRemoveResources(Map<ResourceType, Integer> cost);
+    boolean trySpendResources(Map<ResourceType, Integer> cost);
 
     void addResource(Resource res);
     void removeResource(ResourceType type, int amount);
@@ -49,9 +49,5 @@ public interface GameState extends GameObservable {
     void sendMessage(String message);
 
     GameConfig getConfig();
-    List<GeneratorConfig> getGeneratorConfigs();
-    List<ResourceConfig> getResourceConfigs();
-    List<BuildingConfig> getBuildingConfigs();
-    List<UnitConfig> getUnitConfigs();
 
 }

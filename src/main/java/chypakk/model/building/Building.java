@@ -20,6 +20,6 @@ public abstract class Building {
     }
 
     public boolean isAlive(){
-        return health >= 0;
+        return health > 0;
     }
 }

@@ -34,7 +34,7 @@ public class MenuSystem {
         rootMenu.addItem(1, buildConstructMenu());
         rootMenu.addItem(2, buildUseBuildingMenu());
 
-        if (renderer.getClass().equals(ConsoleUI.class)) {
+        if (renderer instanceof ConsoleUI) {
             rootMenu.addItem(3, buildReportsMenu());
         }
 
@@ -140,9 +140,7 @@ public class MenuSystem {
 
     public void start() {
         MenuComponent menu = buildRootMenu();
-        while (castle.isGameActive()) {
-            menu.execute(castle);
-        }
+        menu.execute(castle);
     }
 
     private String formatCost(Map<String, Integer> cost) {

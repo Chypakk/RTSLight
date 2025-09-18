@@ -19,8 +19,8 @@ public class RecruitCommand implements GameCommand{
 
     @Override
     public void execute(GameState castle) {
-        if (castle.checkCostAndRemoveResources(cost)) return;
-
-        castle.addUnit(unit);
+        if (castle.trySpendResources(cost)) {
+            castle.addUnit(unit);
+        }
     }
 }
