@@ -1,11 +1,12 @@
 package chypakk.ui;
 
 public enum UiRegion {
-    MENU(0.0, 0.0, 0.5, 0.7),
+    MENU(0.0, 0.0, 0.5, 0.6),
     RESOURCE_PANEL(0.5, 0.5, 0.5, 0.5),
     GENERATOR_PANEL(0.5, 0.0, 0.5, 0.5),
-    BUILDING_PANEL(0.0, 0.7, 0.25, 0.3 ),
-    UNIT_PANEL(0.25, 0.7, 0.25, 0.3);
+    BUILDING_PANEL(0.0, 0.6, 0.25, 0.2),
+    UNIT_PANEL(0.25, 0.6, 0.25, 0.2),
+    CHAT_PANEL(0.0, 0.8, 0.5, 0.2);
 
     private final double left;
     private final double top;

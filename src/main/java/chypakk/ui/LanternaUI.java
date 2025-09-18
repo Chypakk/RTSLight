@@ -54,6 +54,7 @@ public class LanternaUI implements GameUI {
         try {
             updateBuildingPanel();
             updateUnitPanel();
+            displayMessage("");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -241,15 +242,17 @@ public class LanternaUI implements GameUI {
 
     @Override
     public void displayMessage(String message) {
-        Rectangle bounds = uiLayout.getBounds(UiRegion.MENU);
+        uiLayout.clear(graphics, UiRegion.CHAT_PANEL);
+        uiLayout.drawBox(graphics, UiRegion.CHAT_PANEL);
+
+        Rectangle bounds = uiLayout.getBounds(UiRegion.CHAT_PANEL);
         int x = (int) (bounds.getX() + 2);
-        int y = (int) (bounds.getY() + bounds.getHeight() - 1);
+        int y = (int) (bounds.getY() + 1);
 
-        String paddedMessage = (message.length() > bounds.getWidth() - 4)
-                ? message.substring(0, (int) bounds.getWidth() - 4)
-                : message;
-
-        graphics.putString(x, y, paddedMessage);
+        if (message.length() > bounds.getWidth() - 4) {
+            message = message.substring(0, (int) bounds.getWidth() - 7) + "...";
+        }
+        graphics.putString(x, y, message);
 
         try {
             screen.refresh();
