@@ -101,7 +101,7 @@ public class LanternaUI implements GameUI {
                 UiRegion.UNIT_PANEL,
                 castle.getConfig().units(),
                 UnitConfig::label,
-                config -> castle.getUnits(config.label()).size(),
+                config -> castle.getUnitManager().getUnits(config.label()).size(),
                 config -> 0
         );
     }
@@ -112,7 +112,7 @@ public class LanternaUI implements GameUI {
                 UiRegion.BUILDING_PANEL,
                 castle.getConfig().buildings(),
                 BuildingConfig::label,
-                config -> castle.haveBuilding(config.label())
+                config -> castle.getBuildingManager().haveBuilding(config.label())
         );
     }
 
@@ -122,8 +122,8 @@ public class LanternaUI implements GameUI {
                 UiRegion.GENERATOR_PANEL,
                 castle.getConfig().generators(),
                 GeneratorConfig::label,
-                config -> castle.getGenerators(config.type()).size(),
-                config -> castle.getAlmostRemovedCount(config.type())
+                config -> castle.getGeneratorManager().getGenerators(config.type()).size(),
+                config -> castle.getGeneratorManager().getAlmostRemovedCount(config.type())
         );
     }
 
@@ -133,7 +133,7 @@ public class LanternaUI implements GameUI {
                 UiRegion.RESOURCE_PANEL,
                 castle.getConfig().resources(),
                 ResourceConfig::label,
-                config -> castle.getResource(ResourceType.fromType(config.type())),
+                config -> castle.getResourceManager().getResource(ResourceType.fromType(config.type())),
                 config -> 0
         );
     }

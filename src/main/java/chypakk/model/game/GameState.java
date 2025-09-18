@@ -2,6 +2,10 @@ package chypakk.model.game;
 
 import chypakk.config.*;
 import chypakk.model.building.Building;
+import chypakk.model.managers.BuildingManagement;
+import chypakk.model.managers.GeneratorManagement;
+import chypakk.model.managers.ResourceManagement;
+import chypakk.model.managers.UnitManagement;
 import chypakk.model.resources.Resource;
 import chypakk.model.resources.ResourceType;
 import chypakk.model.resources.generator.ResourceGenerator;
@@ -14,32 +18,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public interface GameState extends GameObservable {
-    ScheduledFuture<?> scheduleResourceTask(Runnable task, long delay, long period, TimeUnit unit);
-    boolean trySpendResources(Map<ResourceType, Integer> cost);
-
-    void addResource(Resource res);
-    void removeResource(ResourceType type, int amount);
-    int getResource(ResourceType type);
-    void printResources();
-
-    void addGenerator(ResourceGenerator generator);
-    List<ResourceGenerator> getGenerators(String type);
-    int getAlmostRemovedCount(String generatorType);
-    void removeGenerator(ResourceGenerator generator);
-    void stopAllGenerators();
-    void printGenerators();
-
-    void addBuilding(Building building);
-    boolean haveBuilding(String name);
-    boolean haveBuilding(Building building);
-    void printBuildings();
-
-    void addUnit(Unit unit);
-    void removeUnit(Unit unit);
-    void printUnits();
-    List<Unit> getUnits();
-    List<Unit> getUnits(String type);
-
     int getHealth();
     void takeDamage(int damage);
     boolean isAlive();
@@ -50,4 +28,8 @@ public interface GameState extends GameObservable {
 
     GameConfig getConfig();
 
+    ResourceManagement getResourceManager();
+    GeneratorManagement getGeneratorManager();
+    BuildingManagement getBuildingManager();
+    UnitManagement getUnitManager();
 }

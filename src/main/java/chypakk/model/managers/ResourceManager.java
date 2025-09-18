@@ -3,6 +3,9 @@ package chypakk.model.managers;
 import chypakk.config.ResourceConfig;
 import chypakk.model.resources.Resource;
 import chypakk.model.resources.ResourceType;
+import chypakk.observer.event.Action;
+import chypakk.observer.event.EventNotifier;
+import chypakk.observer.event.ResourceEvent;
 
 import java.util.List;
 import java.util.Map;
@@ -10,8 +13,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ResourceManager implements ResourceManagement {
     private final Map<ResourceType, Resource> resources = new ConcurrentHashMap<>();
+    private final EventNotifier eventNotifier;
+    private final Object spendMutex = new Object();
 
-    public ResourceManager(List<ResourceConfig> resources) {
+    public ResourceManager(List<ResourceConfig> resources, EventNotifier eventNotifier) {
+        this.eventNotifier = eventNotifier;
         for (ResourceConfig resourceConfig : resources) {
             ResourceType type = ResourceType.fromType(resourceConfig.type());
             if (type != null) {
@@ -25,11 +31,17 @@ public class ResourceManager implements ResourceManagement {
 
     @Override
     public void addResource(Resource res) {
-        Resource existing = resources.get(res.getType());
-        if (existing != null) {
-            existing.addAmount(res.getAmount());
-        } else {
-            resources.put(res.getType(), res);
+        synchronized (spendMutex){
+            Resource existing = resources.get(res.getType());
+            if (existing != null) {
+                existing.addAmount(res.getAmount());
+            } else {
+                resources.put(res.getType(), res);
+            }
+
+            eventNotifier.notifyObservers(new ResourceEvent(
+                    res.getType().name(), Action.ADDED, res.getAmount()
+            ));
         }
     }
 
@@ -43,7 +55,14 @@ public class ResourceManager implements ResourceManagement {
 
     @Override
     public void removeResource(ResourceType type, int amount) {
-        resources.get(type).removeAmount(amount);
+        synchronized (spendMutex){
+
+            resources.get(type).removeAmount(amount);
+
+            eventNotifier.notifyObservers(new ResourceEvent(
+                    type.name(), Action.REMOVED, amount
+            ));
+        }
     }
 
     @Override
@@ -58,17 +77,19 @@ public class ResourceManager implements ResourceManagement {
     }
 
     @Override
-    public boolean tryRemoveResource(Map<ResourceType, Integer> cost) {
-        for (var entry : cost.entrySet()) {
-            ResourceType type = entry.getKey();
-            int required = entry.getValue();
-            if (resources.get(type).getAmount() < required) {
-                return false;
+    public boolean trySpendResources(Map<ResourceType, Integer> cost) {
+        synchronized (spendMutex) {
+            for (var entry : cost.entrySet()) {
+                ResourceType type = entry.getKey();
+                int required = entry.getValue();
+                if (resources.get(type).getAmount() < required) {
+                    return false;
+                }
             }
-        }
 
-        for (var entry : cost.entrySet()) {
-            removeResource(entry.getKey(), entry.getValue());
+            for (var entry : cost.entrySet()) {
+                removeResource(entry.getKey(), entry.getValue());
+            }
         }
 
         return true;

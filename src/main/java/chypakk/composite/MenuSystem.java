@@ -38,7 +38,7 @@ public class MenuSystem {
             rootMenu.addItem(3, buildReportsMenu());
         }
 
-        rootMenu.addItem(0, new CommandLeaf("Выход", new ExitCommand()));
+        rootMenu.addItem(0, new CommandLeaf("Выход", new ExitCommand(castle.getGeneratorManager())));
 
         return rootMenu;
     }
@@ -56,7 +56,9 @@ public class MenuSystem {
                     description,
                     new AddGeneratorCommand(
                             () -> generatorFactory.createGenerator(config.type(), castle),
-                            convertCost(config.cost())
+                            convertCost(config.cost()),
+                            castle.getGeneratorManager(),
+                            castle.getResourceManager()
                     )
             ));
         }
@@ -73,9 +75,11 @@ public class MenuSystem {
                     description,
                     new AddBuildingCommand(
                             buildingFactory.createBuilding(config.type()),
-                            convertCost(config.cost())
+                            convertCost(config.cost()),
+                            castle.getBuildingManager(),
+                            castle.getResourceManager()
                     ),
-                    castle -> !castle.haveBuilding(config.label())
+                    castle -> !castle.getBuildingManager().haveBuilding(config.label())
             ));
         }
 
@@ -102,9 +106,11 @@ public class MenuSystem {
                             ResourceType.valueOf(exchange.fromType()),
                             exchange.fromAmount(),
                             ResourceType.valueOf(exchange.toType()),
-                            exchange.toAmount()
+                            exchange.toAmount(),
+                            castle.getBuildingManager(),
+                            castle.getResourceManager()
                     ),
-                    castle -> castle.haveBuilding("Рынок")
+                    castle -> castle.getBuildingManager().haveBuilding("Рынок")
             ));
         }
 
@@ -117,9 +123,11 @@ public class MenuSystem {
                             formatCost(config.cost())),
                     new RecruitCommand(
                             unitFactory.createUnit(config.type()),
-                            convertCost(config.cost())
+                            convertCost(config.cost()),
+                            castle.getUnitManager(),
+                            castle.getResourceManager()
                     ),
-                    castle -> castle.haveBuilding("Казармы")
+                    castle -> castle.getBuildingManager().haveBuilding("Казармы")
             ));
         }
 
@@ -131,9 +139,9 @@ public class MenuSystem {
 
     private MenuComponent buildReportsMenu() {
         MenuGroup reportsMenu = new MenuGroup("Отчеты", renderer);
-        reportsMenu.addItem(1, new CommandLeaf("Ресурсы", new ShowResourcesCommand()));
-        reportsMenu.addItem(2, new CommandLeaf("Генераторы", new ShowGeneratorsCommand()));
-        reportsMenu.addItem(3, new CommandLeaf("Здания", new ShowBuildingsCommand()));
+        reportsMenu.addItem(1, new CommandLeaf("Ресурсы", new ShowResourcesCommand(castle.getResourceManager())));
+        reportsMenu.addItem(2, new CommandLeaf("Генераторы", new ShowGeneratorsCommand(castle.getGeneratorManager())));
+        reportsMenu.addItem(3, new CommandLeaf("Здания", new ShowBuildingsCommand(castle.getBuildingManager())));
 
         return reportsMenu;
     }

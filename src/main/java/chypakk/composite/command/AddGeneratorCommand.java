@@ -1,6 +1,8 @@
 package chypakk.composite.command;
 
 import chypakk.model.game.GameState;
+import chypakk.model.managers.GeneratorManagement;
+import chypakk.model.managers.ResourceManagement;
 import chypakk.model.resources.ResourceType;
 import chypakk.model.resources.generator.ResourceGenerator;
 
@@ -11,17 +13,21 @@ public class AddGeneratorCommand implements GameCommand {
 
     private final Supplier<ResourceGenerator> generatorFactory;
     private final Map<ResourceType, Integer> cost;
+    private final GeneratorManagement generatorManagement;
+    private final ResourceManagement resourceManagement;
 
-    public AddGeneratorCommand(Supplier<ResourceGenerator> generatorFactory, Map<ResourceType, Integer> cost) {
+    public AddGeneratorCommand(Supplier<ResourceGenerator> generatorFactory, Map<ResourceType, Integer> cost, GeneratorManagement generatorManagement, ResourceManagement resourceManagement) {
         this.generatorFactory = generatorFactory;
         this.cost = cost;
+        this.generatorManagement = generatorManagement;
+        this.resourceManagement = resourceManagement;
     }
 
     @Override
     public void execute(GameState castle) {
-        if (castle.trySpendResources(cost)) {
+        if (resourceManagement.trySpendResources(cost)) {
             ResourceGenerator generator = generatorFactory.get();
-            castle.addGenerator(generator);
+            generatorManagement.addGenerator(generator);
         }
     }
 }

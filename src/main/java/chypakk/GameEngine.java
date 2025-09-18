@@ -32,7 +32,7 @@ public class GameEngine {
     public void start() {
         GeneratorFactory generatorFactory = new GeneratorFactory(config);
         for (var generatorConf : config.generators()){
-            castle.addGenerator(generatorFactory.createGenerator(generatorConf.type(), castle));
+            castle.getGeneratorManager().addGenerator(generatorFactory.createGenerator(generatorConf.type(), castle));
         }
 
         gameUI.start();

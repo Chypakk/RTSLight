@@ -2,12 +2,16 @@ package chypakk.model.managers;
 
 import chypakk.model.resources.generator.ResourceGenerator;
 import chypakk.model.resources.generator.Status;
+import chypakk.observer.event.Action;
+import chypakk.observer.event.EventNotifier;
+import chypakk.observer.event.GeneratorEvent;
 
 import java.util.List;
 import java.util.concurrent.*;
 
 public class GeneratorManager implements GeneratorManagement {
     private final List<ResourceGenerator> generators = new CopyOnWriteArrayList<>();
+    private final EventNotifier eventNotifier;
     private final ScheduledExecutorService resourceExecutor =
             Executors.newSingleThreadScheduledExecutor(r -> {
                 Thread t = new Thread(r);
@@ -16,10 +20,19 @@ public class GeneratorManager implements GeneratorManagement {
                 return t;
             });
 
+    public GeneratorManager(EventNotifier eventNotifier) {
+        this.eventNotifier = eventNotifier;
+    }
+
     @Override
     public void addGenerator(ResourceGenerator generator) {
         generators.add(generator);
         generator.startGenerator();
+
+        eventNotifier.notifyObservers(new GeneratorEvent(
+                generator.getClass().getSimpleName(),
+                Action.ADDED
+        ));
     }
 
     @Override
@@ -37,6 +50,11 @@ public class GeneratorManager implements GeneratorManagement {
     @Override
     public void removeGenerator(ResourceGenerator generator) {
         generators.remove(generator);
+
+        eventNotifier.notifyObservers(new GeneratorEvent(
+                generator.getClass().getSimpleName(),
+                Action.REMOVED
+        ));
     }
 
     @Override

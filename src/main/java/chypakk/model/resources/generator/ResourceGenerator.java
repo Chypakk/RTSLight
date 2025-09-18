@@ -30,7 +30,7 @@ public abstract class ResourceGenerator {
     }
 
     public void startGenerator(){
-        taskFuture = castle.scheduleResourceTask(this::generateResources, 0, interval, TimeUnit.SECONDS);
+        taskFuture = castle.getGeneratorManager().scheduleResourceTask(this::generateResources, 0, interval, TimeUnit.SECONDS);
     }
 
     private void generateResources() {
@@ -40,7 +40,7 @@ public abstract class ResourceGenerator {
                 return;
             }
 
-            castle.addResource(createResource());
+            castle.getResourceManager().addResource(createResource());
             totalAmount.addAndGet(-amountPerInterval);
             checkStatus();
         } catch (Exception e) {
@@ -69,7 +69,7 @@ public abstract class ResourceGenerator {
         if (taskFuture != null) {
             taskFuture.cancel(true);
         }
-        castle.removeGenerator(this);
+        castle.getGeneratorManager().removeGenerator(this);
     }
 
     public int getAmount() {
