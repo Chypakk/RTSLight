@@ -249,10 +249,19 @@ public class LanternaUI implements GameUI {
         int x = (int) (bounds.getX() + 2);
         int y = (int) (bounds.getY() + 1);
 
-        if (message.length() > bounds.getWidth() - 4) {
-            message = message.substring(0, (int) bounds.getWidth() - 7) + "...";
+        List<String> messages = castle.getGameLog().getMessages();
+        int maxLines = (int) bounds.getHeight() - 2;
+        int startIndex = Math.max(0, messages.size() - maxLines);
+
+        for (int i = startIndex; i < messages.size(); i++) {
+            if (y >= bounds.getY() + bounds.getHeight() - 1) break;
+
+            String msg = messages.get(i);
+            if (msg.length() > bounds.getWidth() - 4) {
+                msg = msg.substring(0, (int) bounds.getWidth() - 7) + "...";
+            }
+            graphics.putString(x, y++, msg);
         }
-        graphics.putString(x, y, message);
 
         try {
             screen.refresh();

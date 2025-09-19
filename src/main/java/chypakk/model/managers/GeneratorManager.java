@@ -3,7 +3,7 @@ package chypakk.model.managers;
 import chypakk.model.resources.generator.ResourceGenerator;
 import chypakk.model.resources.generator.Status;
 import chypakk.observer.event.Action;
-import chypakk.observer.event.EventNotifier;
+import chypakk.observer.EventNotifier;
 import chypakk.observer.event.GeneratorEvent;
 
 import java.util.List;

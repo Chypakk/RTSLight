@@ -4,7 +4,7 @@ import chypakk.config.ResourceConfig;
 import chypakk.model.resources.Resource;
 import chypakk.model.resources.ResourceType;
 import chypakk.observer.event.Action;
-import chypakk.observer.event.EventNotifier;
+import chypakk.observer.EventNotifier;
 import chypakk.observer.event.ResourceEvent;
 
 import java.util.List;

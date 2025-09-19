@@ -3,7 +3,7 @@ package chypakk.model.managers;
 import chypakk.model.building.Building;
 import chypakk.observer.event.Action;
 import chypakk.observer.event.BuildingEvent;
-import chypakk.observer.event.EventNotifier;
+import chypakk.observer.EventNotifier;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;

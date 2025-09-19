@@ -30,7 +30,7 @@ public class MenuSystem {
     }
 
     private MenuComponent buildRootMenu() {
-        MenuGroup rootMenu = new MenuGroup("Главное меню", renderer);
+        MenuGroup rootMenu = new MenuGroup("Главное меню", renderer, castle);
         rootMenu.addItem(1, buildConstructMenu());
         rootMenu.addItem(2, buildUseBuildingMenu());
 
@@ -44,7 +44,7 @@ public class MenuSystem {
     }
 
     private MenuComponent buildConstructMenu() {
-        MenuGroup generatorsMenu = new MenuGroup("Генераторы", renderer);
+        MenuGroup generatorsMenu = new MenuGroup("Генераторы", renderer, castle);
         for (int i = 0; i < castle.getConfig().generators().size(); i++) {
             var config = castle.getConfig().generators().get(i);
             String description = String.format("Добавить %s (%s)",
@@ -63,7 +63,7 @@ public class MenuSystem {
             ));
         }
 
-        MenuGroup construction = new MenuGroup("Здания", renderer);
+        MenuGroup construction = new MenuGroup("Здания", renderer, castle);
         for (int i = 0; i < castle.getConfig().buildings().size(); i++) {
             var config = castle.getConfig().buildings().get(i);
             String description = String.format("Добавить %s (%s)",
@@ -83,7 +83,7 @@ public class MenuSystem {
             ));
         }
 
-        MenuGroup buildMenu = new MenuGroup("Построить", renderer);
+        MenuGroup buildMenu = new MenuGroup("Построить", renderer, castle);
         buildMenu.addItem(1, generatorsMenu);
         buildMenu.addItem(2, construction);
 
@@ -91,9 +91,9 @@ public class MenuSystem {
     }
 
     private MenuComponent buildUseBuildingMenu() {
-        MenuGroup buildingsUseMenu = new MenuGroup("Здания", renderer);
+        MenuGroup buildingsUseMenu = new MenuGroup("Здания", renderer, castle);
 
-        MenuGroup marketMenu = new MenuGroup("Рынок", renderer);
+        MenuGroup marketMenu = new MenuGroup("Рынок", renderer, castle);
         for (int i = 0; i < castle.getConfig().exchanges().size(); i++) {
             ExchangeConfig exchange = castle.getConfig().exchanges().get(i);
             marketMenu.addItem(i + 1, new CommandLeaf(
@@ -114,7 +114,7 @@ public class MenuSystem {
             ));
         }
 
-        MenuGroup barracksMenu = new MenuGroup("Казармы", renderer);
+        MenuGroup barracksMenu = new MenuGroup("Казармы", renderer, castle);
         for (int i = 0; i < castle.getConfig().units().size(); i++) {
             UnitConfig config = castle.getConfig().units().get(i);
             barracksMenu.addItem(i + 1, new CommandLeaf(
@@ -138,7 +138,7 @@ public class MenuSystem {
     }
 
     private MenuComponent buildReportsMenu() {
-        MenuGroup reportsMenu = new MenuGroup("Отчеты", renderer);
+        MenuGroup reportsMenu = new MenuGroup("Отчеты", renderer, castle);
         reportsMenu.addItem(1, new CommandLeaf("Ресурсы", new ShowResourcesCommand(castle.getResourceManager())));
         reportsMenu.addItem(2, new CommandLeaf("Генераторы", new ShowGeneratorsCommand(castle.getGeneratorManager())));
         reportsMenu.addItem(3, new CommandLeaf("Здания", new ShowBuildingsCommand(castle.getBuildingManager())));

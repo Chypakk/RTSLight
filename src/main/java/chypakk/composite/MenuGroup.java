@@ -1,6 +1,7 @@
 package chypakk.composite;
 
 import chypakk.model.game.GameState;
+import chypakk.observer.MessageNotifier;
 import chypakk.ui.MenuRender;
 
 import java.util.LinkedHashMap;
@@ -10,10 +11,12 @@ public class MenuGroup implements MenuComponent{
     private final String title;
     private final Map<Integer, MenuComponent> items = new LinkedHashMap<>();
     private final MenuRender renderer;
+    private final MessageNotifier messageNotifier;
 
-    public MenuGroup(String title, MenuRender renderer) {
+    public MenuGroup(String title, MenuRender renderer, MessageNotifier messageNotifier) {
         this.title = title;
         this.renderer = renderer;
+        this.messageNotifier = messageNotifier;
     }
 
     public void addItem(int key, MenuComponent component) {
@@ -40,7 +43,7 @@ public class MenuGroup implements MenuComponent{
             if (selected != null) {
                 selected.execute(castle);
             } else {
-                renderer.displayMessage("Неверный ввод!");
+                messageNotifier.sendMessage("Неверный ввод!");
             }
         }
     }

@@ -2,7 +2,7 @@ package chypakk.model.managers;
 
 import chypakk.model.units.Unit;
 import chypakk.observer.event.Action;
-import chypakk.observer.event.EventNotifier;
+import chypakk.observer.EventNotifier;
 import chypakk.observer.event.UnitEvent;
 
 import java.util.List;
