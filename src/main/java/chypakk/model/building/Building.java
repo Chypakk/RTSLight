@@ -1,5 +1,6 @@
 package chypakk.model.building;
 
+//todo добавить equal и hashcode
 public abstract class Building {
     protected final String name;
     protected int health;

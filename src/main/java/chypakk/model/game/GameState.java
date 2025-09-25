@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+//todo сделать тонким и ввести новую абстракцию между ui и логикой
 public interface GameState extends GameObservable, MessageNotifier {
     int getHealth();
     void takeDamage(int damage);

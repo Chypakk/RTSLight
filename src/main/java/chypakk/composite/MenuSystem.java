@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+//todo полностью переделать
 public class MenuSystem {
     private final Logger logger = LoggerFactory.getLogger(MenuSystem.class);
 

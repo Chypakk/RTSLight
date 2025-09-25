@@ -212,6 +212,7 @@ public class LanternaUI implements GameUI {
         }
     }
 
+    //todo переделать
     @Override
     public int getChoice(Map<Integer, String> options) {
         try {
