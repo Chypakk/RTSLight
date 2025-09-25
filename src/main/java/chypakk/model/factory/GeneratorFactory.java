@@ -6,8 +6,12 @@ import chypakk.model.game.GameState;
 import chypakk.model.resources.generator.Forest;
 import chypakk.model.resources.generator.GoldMine;
 import chypakk.model.resources.generator.ResourceGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GeneratorFactory {
+    private final Logger logger = LoggerFactory.getLogger(GeneratorFactory.class);
+
     private final GameConfig config;
 
     public GeneratorFactory(GameConfig config) {
@@ -30,7 +34,10 @@ public class GeneratorFactory {
                     generatorConfig.totalAmount(),
                     castle
             );
-            default -> throw new IllegalArgumentException("Неизвестный тип генератора: " + type);
+            default -> {
+                logger.error("Неизвестный тип генератора: {}", type);
+                yield null;
+            }
         };
     }
 
@@ -38,6 +45,6 @@ public class GeneratorFactory {
         return config.generators().stream()
                 .filter(g -> g.type().equals(type))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Неизвестный тип генератора: " + type));
+                .orElse(null);
     }
 }

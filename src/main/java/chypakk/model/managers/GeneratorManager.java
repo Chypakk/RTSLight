@@ -5,11 +5,15 @@ import chypakk.model.resources.generator.Status;
 import chypakk.observer.event.Action;
 import chypakk.observer.EventNotifier;
 import chypakk.observer.event.GeneratorEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.*;
 
 public class GeneratorManager implements GeneratorManagement {
+    private final Logger logger = LoggerFactory.getLogger(GeneratorManager.class);
+
     private final List<ResourceGenerator> generators = new CopyOnWriteArrayList<>();
     private final EventNotifier eventNotifier;
     private final ScheduledExecutorService resourceExecutor =
@@ -26,6 +30,8 @@ public class GeneratorManager implements GeneratorManagement {
 
     @Override
     public void addGenerator(ResourceGenerator generator) {
+        logger.debug("добавление {}", generator);
+
         generators.add(generator);
         generator.startGenerator();
 
@@ -49,6 +55,8 @@ public class GeneratorManager implements GeneratorManagement {
 
     @Override
     public void removeGenerator(ResourceGenerator generator) {
+        logger.debug("удаление {}", generator);
+
         generators.remove(generator);
 
         eventNotifier.notifyObservers(new GeneratorEvent(
@@ -59,6 +67,7 @@ public class GeneratorManager implements GeneratorManagement {
 
     @Override
     public void stopAllGenerators() {
+        logger.debug("выключение генераторов");
         resourceExecutor.shutdownNow();
         try {
             if (!resourceExecutor.awaitTermination(1, TimeUnit.SECONDS)) {
@@ -71,7 +80,7 @@ public class GeneratorManager implements GeneratorManagement {
 
         generators.clear();
 
-        System.out.println("Все генераторы остановлены");
+        logger.info("Все генераторы остановлены");
     }
 
     @Override

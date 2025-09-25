@@ -3,12 +3,15 @@ package chypakk.model.factory;
 import chypakk.model.building.Barracks;
 import chypakk.model.building.Building;
 import chypakk.model.building.Marketplace;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
 public class BuildingFactory {
+    private final Logger logger = LoggerFactory.getLogger(BuildingFactory.class);
     private final Map<String, Supplier<Building>> buildingCreators;
 
     public BuildingFactory() {
@@ -26,7 +29,8 @@ public class BuildingFactory {
     public Building createBuilding(String type) {
         Supplier<Building> creator = buildingCreators.get(type);
         if (creator == null) {
-            throw new IllegalArgumentException("Неизвестный тип здания: " + type);
+            logger.error("Неизвестный тип здания: {}", type);
+            return null;
         }
         return creator.get();
     }

@@ -2,14 +2,19 @@ package chypakk.model.resources.generator;
 
 import chypakk.model.game.GameState;
 import chypakk.model.resources.Resource;
+import chypakk.model.resources.ResourcesBuilder;
 import chypakk.observer.event.Action;
 import chypakk.observer.event.GeneratorEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class ResourceGenerator {
+    private final Logger logger = LoggerFactory.getLogger(ResourceGenerator.class);
+
     protected final int interval;
     protected final int amountPerInterval;
     protected final GameState castle;
@@ -39,8 +44,9 @@ public abstract class ResourceGenerator {
                 stopGenerator();
                 return;
             }
-
-            castle.getResourceManager().addResource(createResource());
+            Resource res = createResource();
+            logger.debug("генерация {}", res);
+            castle.getResourceManager().addResource(res);
             totalAmount.addAndGet(-amountPerInterval);
             checkStatus();
         } catch (Exception e) {
@@ -61,7 +67,7 @@ public abstract class ResourceGenerator {
     }
 
     private void handleGenerationError(Exception e) {
-        System.err.println("Ошибка в " + getClass().getSimpleName() + ": " + e.getMessage());
+        logger.error("Ошибка генерации ресурсов в {}", getClass().getSimpleName(), e);
         stopGenerator();
     }
 

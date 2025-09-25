@@ -5,10 +5,13 @@ import chypakk.model.managers.ResourceManagement;
 import chypakk.model.managers.UnitManagement;
 import chypakk.model.resources.ResourceType;
 import chypakk.model.units.Unit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
 public class RecruitCommand implements GameCommand{
+    private final Logger logger = LoggerFactory.getLogger(RecruitCommand.class);
 
     private final Unit unit;
     private final Map<ResourceType, Integer> cost;
@@ -26,6 +29,7 @@ public class RecruitCommand implements GameCommand{
     @Override
     public void execute(GameState castle) {
         if (resourceManagement.trySpendResources(cost)) {
+            logger.debug("добавление {}", unit);
             unitManagement.addUnit(unit);
         }
     }

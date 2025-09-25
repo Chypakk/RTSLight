@@ -7,6 +7,7 @@ import java.util.Map;
 public record GeneratorConfig(
         @JsonProperty("type") String type,
         @JsonProperty("label") String label,
+        @JsonProperty("initial") Boolean initial,
         @JsonProperty("order") int order,
         @JsonProperty("interval") int interval,
         @JsonProperty("amountPerInterval") int amountPerInterval,

@@ -11,4 +11,6 @@ public interface ResourceManagement {
     void removeResource(ResourceType type, int amount);
     void printResources();
     boolean trySpendResources(Map<ResourceType, Integer> cost);
+
+    void addResourceFromCost(Map<ResourceType, Integer> cost);
 }

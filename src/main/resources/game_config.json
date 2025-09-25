@@ -11,16 +11,23 @@
       "label": "дерево",
       "order": 2,
       "initialAmount": 50
+    },
+    {
+      "type": "IRON",
+      "label": "железо",
+      "order": 3,
+      "initialAmount": 0
     }
   ],
   "generators": [
     {
       "type": "GoldMine",
       "label": "шахта",
+      "initial": true,
       "order": 1,
       "interval": 5,
       "amountPerInterval": 10,
-      "totalAmount": 70,
+      "totalAmount": 150,
       "cost": {
         "GOLD": 50,
         "WOOD": 60
@@ -29,12 +36,26 @@
     {
       "type": "Forest",
       "label": "лес",
+      "initial": true,
       "order": 2,
       "interval": 2,
       "amountPerInterval": 5,
-      "totalAmount": 100,
+      "totalAmount": 300,
       "cost": {
         "WOOD": 70
+      }
+    },
+    {
+      "type": "Mine",
+      "label": "рудник",
+      "initial": false,
+      "order": 3,
+      "interval": 3,
+      "amountPerInterval": 5,
+      "totalAmount": 200,
+      "cost": {
+        "WOOD": 100,
+        "GOLD": 70
       }
     }
   ],
@@ -56,12 +77,22 @@
         "GOLD": 50,
         "WOOD": 50
       }
+    },
+    {
+      "type": "Forge",
+      "label": "Кузня",
+      "health": 40,
+      "cost": {
+        "GOLD": 50,
+        "WOOD": 100,
+        "IRON": 40
+      }
     }
   ],
   "units": [
     {
       "type": "Soldier",
-      "label": "Рыцарь",
+      "label": "Пехотинец",
       "health": 50,
       "baseDamage": 10,
       "attackStrategy": "MELEE",
@@ -80,12 +111,24 @@
         "GOLD": 10,
         "WOOD": 20
       }
+    },
+    {
+      "type": "Knight",
+      "label": "Рыцарь",
+      "health": 80,
+      "baseDamage": 15,
+      "attackStrategy": "MELEE",
+      "cost": {
+        "GOLD": 50,
+        "WOOD": 30,
+        "IRON": 10
+      }
     }
   ],
   "exchanges": [
     {
       "fromType": "WOOD",
-      "fromAmount": 10,
+      "fromAmount": 20,
       "toType": "GOLD",
       "toAmount": 5
     },
@@ -93,7 +136,19 @@
       "fromType": "GOLD",
       "fromAmount": 5,
       "toType": "WOOD",
+      "toAmount": 20
+    },
+    {
+      "fromType": "GOLD",
+      "fromAmount": 5,
+      "toType": "IRON",
       "toAmount": 10
+    },
+    {
+      "fromType": "IRON",
+      "fromAmount": 10,
+      "toType": "GOLD",
+      "toAmount": 5
     }
   ]
 }

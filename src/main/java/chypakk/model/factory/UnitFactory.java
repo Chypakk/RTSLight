@@ -5,8 +5,11 @@ import chypakk.config.UnitConfig;
 import chypakk.model.units.Archer;
 import chypakk.model.units.Soldier;
 import chypakk.model.units.Unit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UnitFactory {
+    private final Logger logger = LoggerFactory.getLogger(UnitFactory.class);
     private final GameConfig config;
 
     public UnitFactory(GameConfig config) {
@@ -19,7 +22,10 @@ public class UnitFactory {
         return switch (type) {
             case "Soldier" -> new Soldier(unitConfig.label(), unitConfig.health(), unitConfig.baseDamage());
             case "Archer" -> new Archer(unitConfig.label(), unitConfig.health(), unitConfig.baseDamage());
-            default -> throw new IllegalArgumentException("Неизвестный тип юнита: " + type);
+            default -> {
+                logger.error("Неизвестный тип юнита: {}", type);
+                yield null;
+            }
         };
     }
 

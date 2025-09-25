@@ -4,11 +4,15 @@ import chypakk.model.building.Building;
 import chypakk.observer.event.Action;
 import chypakk.observer.event.BuildingEvent;
 import chypakk.observer.EventNotifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class BuildingManager implements BuildingManagement {
+    private final Logger logger = LoggerFactory.getLogger(BuildingManager.class);
+
     private final Set<Building> buildings = ConcurrentHashMap.newKeySet();
     private final EventNotifier eventNotifier;
 
@@ -18,6 +22,8 @@ public class BuildingManager implements BuildingManagement {
 
     @Override
     public void addBuilding(Building building) {
+        logger.debug("добавление {}", building);
+
         buildings.add(building);
         eventNotifier.notifyObservers(new BuildingEvent(
                 building.getName(), Action.ADDED
@@ -32,6 +38,11 @@ public class BuildingManager implements BuildingManagement {
 
     @Override
     public boolean haveBuilding(Building building) {
+        if (building == null){
+            logger.error("неизвестное здание");
+            return false;
+        }
+
         return buildings.contains(building);
     }
 

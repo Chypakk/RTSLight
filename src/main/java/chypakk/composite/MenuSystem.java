@@ -10,11 +10,15 @@ import chypakk.model.factory.UnitFactory;
 import chypakk.model.resources.ResourceType;
 import chypakk.ui.ConsoleUI;
 import chypakk.ui.MenuRender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class MenuSystem {
+    private final Logger logger = LoggerFactory.getLogger(MenuSystem.class);
+
     private final GameState castle;
     private final MenuRender renderer;
     private final GeneratorFactory generatorFactory;
@@ -103,9 +107,9 @@ public class MenuSystem {
                             exchange.toAmount(),
                             getResourceLabel(exchange.toType())),
                     new ExchangeResourceCommand(
-                            ResourceType.valueOf(exchange.fromType()),
+                            ResourceType.fromType(exchange.fromType()),
                             exchange.fromAmount(),
-                            ResourceType.valueOf(exchange.toType()),
+                            ResourceType.fromType(exchange.toType()),
                             exchange.toAmount(),
                             castle.getBuildingManager(),
                             castle.getResourceManager()
@@ -163,7 +167,8 @@ public class MenuSystem {
                         e -> {
                             ResourceType type = ResourceType.fromType(e.getKey());
                             if (type == null) {
-                                throw new IllegalArgumentException("Неизвестный тип ресурса: " + e.getKey());
+                                logger.error("Неизвестный тип ресурса: {}", e.getKey());
+                                return null;
                             }
                             return type;
                         },

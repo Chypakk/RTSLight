@@ -3,15 +3,20 @@ package chypakk.model.managers;
 import chypakk.config.ResourceConfig;
 import chypakk.model.resources.Resource;
 import chypakk.model.resources.ResourceType;
+import chypakk.model.resources.ResourcesBuilder;
 import chypakk.observer.event.Action;
 import chypakk.observer.EventNotifier;
 import chypakk.observer.event.ResourceEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ResourceManager implements ResourceManagement {
+    private final Logger logger = LoggerFactory.getLogger(ResourceManager.class);
+
     private final Map<ResourceType, Resource> resources = new ConcurrentHashMap<>();
     private final EventNotifier eventNotifier;
     private final Object spendMutex = new Object();
@@ -23,7 +28,7 @@ public class ResourceManager implements ResourceManagement {
             if (type != null) {
                 this.resources.put(
                         type,
-                        new Resource(ResourceType.valueOf(resourceConfig.type()), resourceConfig.initialAmount())
+                        new Resource(ResourceType.fromType(resourceConfig.type()), resourceConfig.initialAmount())
                 );
             }
         }
@@ -32,6 +37,11 @@ public class ResourceManager implements ResourceManagement {
     @Override
     public void addResource(Resource res) {
         synchronized (spendMutex){
+            if (res == null){
+                logger.error("неизвестный тип");
+                return;
+            }
+
             Resource existing = resources.get(res.getType());
             if (existing != null) {
                 existing.addAmount(res.getAmount());
@@ -81,8 +91,16 @@ public class ResourceManager implements ResourceManagement {
         synchronized (spendMutex) {
             for (var entry : cost.entrySet()) {
                 ResourceType type = entry.getKey();
+
+                if (type == null){
+                    logger.error("неизвестный тип ресурса");
+                    return false;
+                }
+
                 int required = entry.getValue();
-                if (resources.get(type).getAmount() < required) {
+                int available = resources.get(type).getAmount();
+                if (available < required) {
+                    logger.debug("Не хватает ресурса {}: требуется {}, имеется {}", type, required, available);
                     return false;
                 }
             }
@@ -92,6 +110,16 @@ public class ResourceManager implements ResourceManagement {
             }
         }
 
+        logger.info("Успешно потрачены ресурсы: {}", cost);
         return true;
+    }
+
+    @Override
+    public void addResourceFromCost(Map<ResourceType, Integer> cost) {
+        synchronized (spendMutex){
+            for (var entry : cost.entrySet()){
+                addResource(ResourcesBuilder.generate(entry.getKey(), entry.getValue()));
+            }
+        }
     }
 }
