@@ -1,12 +1,10 @@
 package chypakk.composite;
 
-import chypakk.composite.command.*;
 import chypakk.config.ExchangeConfig;
+import chypakk.config.GameConfig;
 import chypakk.config.UnitConfig;
-import chypakk.model.game.GameState;
-import chypakk.model.factory.BuildingFactory;
-import chypakk.model.factory.GeneratorFactory;
-import chypakk.model.factory.UnitFactory;
+import chypakk.model.dto.GameCommandDTO;
+import chypakk.model.game.GameService;
 import chypakk.model.resources.ResourceType;
 import chypakk.ui.ConsoleUI;
 import chypakk.ui.MenuRender;
@@ -20,22 +18,16 @@ import java.util.stream.Collectors;
 public class MenuSystem {
     private final Logger logger = LoggerFactory.getLogger(MenuSystem.class);
 
-    private final GameState castle;
+    private final GameService gameService;
     private final MenuRender renderer;
-    private final GeneratorFactory generatorFactory;
-    private final BuildingFactory buildingFactory;
-    private final UnitFactory unitFactory;
 
-    public MenuSystem(GameState castle, MenuRender renderer) {
-        this.castle = castle;
+    public MenuSystem(GameService gameService, MenuRender renderer) {
+        this.gameService = gameService;
         this.renderer = renderer;
-        this.generatorFactory = new GeneratorFactory(castle.getConfig());
-        this.buildingFactory = new BuildingFactory();
-        this.unitFactory = new UnitFactory(castle.getConfig());
     }
 
     private MenuComponent buildRootMenu() {
-        MenuGroup rootMenu = new MenuGroup("Главное меню", renderer, castle);
+        MenuGroup rootMenu = new MenuGroup("Главное меню", renderer, gameService);
         rootMenu.addItem(1, buildConstructMenu());
         rootMenu.addItem(2, buildUseBuildingMenu());
 
@@ -43,52 +35,48 @@ public class MenuSystem {
             rootMenu.addItem(3, buildReportsMenu());
         }
 
-        rootMenu.addItem(0, new CommandLeaf("Выход", new ExitCommand(castle.getGeneratorManager())));
+        rootMenu.addItem(0, new CommandLeaf(
+                        "Выход", () -> gameService.executeCommand(new GameCommandDTO.ExitGame())
+                )
+        );
 
         return rootMenu;
     }
 
     private MenuComponent buildConstructMenu() {
-        MenuGroup generatorsMenu = new MenuGroup("Генераторы", renderer, castle);
-        for (int i = 0; i < castle.getConfig().generators().size(); i++) {
-            var config = castle.getConfig().generators().get(i);
+        GameConfig config = gameService.getConfig();
+        MenuGroup generatorsMenu = new MenuGroup("Генераторы", renderer, gameService);
+
+        for (int i = 0; i < config.generators().size(); i++) {
+            var configGen = config.generators().get(i);
             String description = String.format("Добавить %s (%s)",
-                    config.label(),
-                    formatCost(config.cost())
+                    configGen.label(),
+                    formatCost(configGen.cost())
             );
 
             generatorsMenu.addItem(i + 1, new CommandLeaf(
-                    description,
-                    new AddGeneratorCommand(
-                            () -> generatorFactory.createGenerator(config.type(), castle),
-                            convertCost(config.cost()),
-                            castle.getGeneratorManager(),
-                            castle.getResourceManager()
+                            description,
+                            () -> gameService.executeCommand(new GameCommandDTO.AddGenerator(configGen.type()))
                     )
-            ));
+            );
         }
 
-        MenuGroup construction = new MenuGroup("Здания", renderer, castle);
-        for (int i = 0; i < castle.getConfig().buildings().size(); i++) {
-            var config = castle.getConfig().buildings().get(i);
+        MenuGroup construction = new MenuGroup("Здания", renderer, gameService);
+        for (int i = 0; i < config.buildings().size(); i++) {
+            var configBuild = config.buildings().get(i);
             String description = String.format("Добавить %s (%s)",
-                    config.label(),
-                    formatCost(config.cost())
+                    configBuild.label(),
+                    formatCost(configBuild.cost())
             );
 
             construction.addItem(i + 1, new CommandLeaf(
                     description,
-                    new AddBuildingCommand(
-                            buildingFactory.createBuilding(config.type()),
-                            convertCost(config.cost()),
-                            castle.getBuildingManager(),
-                            castle.getResourceManager()
-                    ),
-                    castle -> !castle.getBuildingManager().haveBuilding(config.label())
+                    () -> gameService.executeCommand(new GameCommandDTO.AddBuilding(configBuild.type())),
+                    () -> !gameService.hasBuilding(configBuild.label())
             ));
         }
 
-        MenuGroup buildMenu = new MenuGroup("Построить", renderer, castle);
+        MenuGroup buildMenu = new MenuGroup("Построить", renderer, gameService);
         buildMenu.addItem(1, generatorsMenu);
         buildMenu.addItem(2, construction);
 
@@ -96,43 +84,39 @@ public class MenuSystem {
     }
 
     private MenuComponent buildUseBuildingMenu() {
-        MenuGroup buildingsUseMenu = new MenuGroup("Здания", renderer, castle);
+        GameConfig config = gameService.getConfig();
 
-        MenuGroup marketMenu = new MenuGroup("Рынок", renderer, castle);
-        for (int i = 0; i < castle.getConfig().exchanges().size(); i++) {
-            ExchangeConfig exchange = castle.getConfig().exchanges().get(i);
+        MenuGroup buildingsUseMenu = new MenuGroup("Здания", renderer, gameService);
+        MenuGroup marketMenu = new MenuGroup("Рынок", renderer, gameService);
+        for (int i = 0; i < config.exchanges().size(); i++) {
+            ExchangeConfig exchange = config.exchanges().get(i);
             marketMenu.addItem(i + 1, new CommandLeaf(
                     String.format("Обменять %d %s на %d %s",
                             exchange.fromAmount(),
                             getResourceLabel(exchange.fromType()),
                             exchange.toAmount(),
                             getResourceLabel(exchange.toType())),
-                    new ExchangeResourceCommand(
-                            ResourceType.fromType(exchange.fromType()),
+
+                    () -> gameService.executeCommand(new GameCommandDTO.ExchangeResource(
+                            exchange.fromType(),
                             exchange.fromAmount(),
-                            ResourceType.fromType(exchange.toType()),
-                            exchange.toAmount(),
-                            castle.getBuildingManager(),
-                            castle.getResourceManager()
-                    ),
-                    castle -> castle.getBuildingManager().haveBuilding("Рынок")
+                            exchange.toType(),
+                            exchange.toAmount()
+                    )),
+                    () -> gameService.hasBuilding("Рынок")
             ));
         }
 
-        MenuGroup barracksMenu = new MenuGroup("Казармы", renderer, castle);
-        for (int i = 0; i < castle.getConfig().units().size(); i++) {
-            UnitConfig config = castle.getConfig().units().get(i);
+        MenuGroup barracksMenu = new MenuGroup("Казармы", renderer, gameService);
+        for (int i = 0; i < config.units().size(); i++) {
+            UnitConfig unitConfig = config.units().get(i);
             barracksMenu.addItem(i + 1, new CommandLeaf(
                     String.format("Нанять %s (%s)",
-                            config.label(),
-                            formatCost(config.cost())),
-                    new RecruitCommand(
-                            unitFactory.createUnit(config.type()),
-                            convertCost(config.cost()),
-                            castle.getUnitManager(),
-                            castle.getResourceManager()
-                    ),
-                    castle -> castle.getBuildingManager().haveBuilding("Казармы")
+                            unitConfig.label(),
+                            formatCost(unitConfig.cost())),
+
+                    () -> gameService.executeCommand(new GameCommandDTO.RecruitUnit(unitConfig.type())),
+                    () -> gameService.hasBuilding("Казармы")
             ));
         }
 
@@ -143,17 +127,29 @@ public class MenuSystem {
     }
 
     private MenuComponent buildReportsMenu() {
-        MenuGroup reportsMenu = new MenuGroup("Отчеты", renderer, castle);
-        reportsMenu.addItem(1, new CommandLeaf("Ресурсы", new ShowResourcesCommand(castle.getResourceManager())));
-        reportsMenu.addItem(2, new CommandLeaf("Генераторы", new ShowGeneratorsCommand(castle.getGeneratorManager())));
-        reportsMenu.addItem(3, new CommandLeaf("Здания", new ShowBuildingsCommand(castle.getBuildingManager())));
+        MenuGroup reportsMenu = new MenuGroup("Отчеты", renderer, gameService);
+        reportsMenu.addItem(1, new CommandLeaf(
+                        "Ресурсы",
+                        () -> gameService.executeCommand(new GameCommandDTO.ShowResources())
+                )
+        );
+        reportsMenu.addItem(2, new CommandLeaf(
+                        "Генераторы",
+                        () -> gameService.executeCommand(new GameCommandDTO.ShowGenerators())
+                )
+        );
+        reportsMenu.addItem(3, new CommandLeaf(
+                        "Здания",
+                        () -> gameService.executeCommand(new GameCommandDTO.ShowBuildings())
+                )
+        );
 
         return reportsMenu;
     }
 
     public void start() {
         MenuComponent menu = buildRootMenu();
-        menu.execute(castle);
+        menu.execute();
     }
 
     private String formatCost(Map<String, Integer> cost) {
@@ -178,7 +174,7 @@ public class MenuSystem {
     }
 
     private String getResourceLabel(String resourceType) {
-        return castle.getConfig().resources().stream()
+        return gameService.getConfig().resources().stream()
                 .filter(r -> r.type().equals(resourceType))
                 .findFirst()
                 .map(chypakk.config.ResourceConfig::label)

@@ -1,6 +1,8 @@
 package chypakk.ui;
 
 import chypakk.composite.MenuSystem;
+import chypakk.model.game.GameService;
+import chypakk.model.game.GameServiceImpl;
 import chypakk.model.game.GameState;
 import chypakk.observer.event.BuildingEvent;
 import chypakk.observer.event.GameEvent;
@@ -12,18 +14,20 @@ import java.util.Scanner;
 
 public class ConsoleUI implements GameUI {
     private final GameState castle;
+    private final GameService gameService;
     private final MenuSystem menuSystem;
     private final Scanner scanner = new Scanner(System.in);
 
-    public ConsoleUI(GameState castle) {
-        this.castle = castle;
-        this.menuSystem = new MenuSystem(castle, this);;
+    public ConsoleUI(GameService gameService) {
+        this.gameService = gameService;
+        this.castle = ((GameServiceImpl) gameService).getGameState();
+        this.menuSystem = new MenuSystem(gameService, this);
         castle.addObserver(this);
     }
 
     @Override
     public void start() {
-        while (castle.isGameActive()) {
+        while (gameService.isGameActive()) {
             menuSystem.start();
         }
     }

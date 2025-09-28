@@ -1,7 +1,6 @@
 package chypakk.composite;
 
-import chypakk.model.game.GameState;
-import chypakk.observer.MessageNotifier;
+import chypakk.model.game.GameService;
 import chypakk.ui.MenuRender;
 
 import java.util.LinkedHashMap;
@@ -11,12 +10,12 @@ public class MenuGroup implements MenuComponent{
     private final String title;
     private final Map<Integer, MenuComponent> items = new LinkedHashMap<>();
     private final MenuRender renderer;
-    private final MessageNotifier messageNotifier;
+    private final GameService gameService;
 
-    public MenuGroup(String title, MenuRender renderer, MessageNotifier messageNotifier) {
+    public MenuGroup(String title, MenuRender renderer, GameService gameService) {
         this.title = title;
         this.renderer = renderer;
-        this.messageNotifier = messageNotifier;
+        this.gameService = gameService;
     }
 
     public void addItem(int key, MenuComponent component) {
@@ -24,9 +23,14 @@ public class MenuGroup implements MenuComponent{
     }
 
     @Override
-    public void execute(GameState castle) {
-        while (castle.isGameActive()) {
-            Map<Integer, String> options = buildVisibleOptions(castle);
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
+    public void execute() {
+        while (gameService.isGameActive()) {
+            Map<Integer, String> options = buildVisibleOptions();
 
             if (!title.equals("Главное меню")) {
                 options.put(0, "Назад");
@@ -39,27 +43,30 @@ public class MenuGroup implements MenuComponent{
                 break;
             }
 
-            MenuComponent selected = getVisibleItem(castle, choice);
+            MenuComponent selected = getVisibleItem(choice);
             if (selected != null) {
-                selected.execute(castle);
+                selected.execute();
             } else {
-                messageNotifier.sendMessage("Неверный ввод!");
+                renderer.displayMessage("Неверный ввод!");
             }
         }
     }
 
-    private Map<Integer, String> buildVisibleOptions(GameState castle) {
+    @Override
+    public boolean isVisible() {
+        return items.values().stream().anyMatch(MenuComponent::isVisible);
+    }
+
+    private Map<Integer, String> buildVisibleOptions() {
         Map<Integer, String> options = new LinkedHashMap<>();
         int counter = 1;
 
         for (MenuComponent component : items.values()) {
-            if (component.isVisible(castle)) {
+            if (component.isVisible()) {
                 if (component.getTitle().equals("Выход")){
                     options.put(0, component.getTitle());
-
                 } else{
                     options.put(counter++, component.getTitle());
-
                 }
             }
         }
@@ -67,14 +74,14 @@ public class MenuGroup implements MenuComponent{
         return options;
     }
 
-    private MenuComponent getVisibleItem(GameState castle, int choice) {
+    private MenuComponent getVisibleItem(int choice) {
         int counter = 1;
         for (MenuComponent component : items.values()) {
-            if (component.isVisible(castle)) {
-                if (counter++ == choice) {
+            if (component.isVisible()) {
+                if ("Выход".equals(component.getTitle()) && choice == 0) {
                     return component;
                 }
-                if (component.getTitle().equals("Выход") && choice == 0){
+                if (counter++ == choice) {
                     return component;
                 }
             }
@@ -82,13 +89,4 @@ public class MenuGroup implements MenuComponent{
         return null;
     }
 
-    @Override
-    public String getTitle() {
-        return title;
-    }
-
-    @Override
-    public boolean isVisible(GameState castle) {
-        return items.values().stream().anyMatch(item -> item.isVisible(castle));
-    }
 }

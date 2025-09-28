@@ -2,7 +2,10 @@ package chypakk;
 
 import chypakk.config.ConfigLoader;
 import chypakk.config.GameConfig;
+import chypakk.model.dto.GameCommandDTO;
 import chypakk.model.game.Castle;
+import chypakk.model.game.GameService;
+import chypakk.model.game.GameServiceImpl;
 import chypakk.model.game.GameState;
 import chypakk.model.factory.GeneratorFactory;
 import chypakk.ui.GameUI;
@@ -18,15 +21,17 @@ public class GameEngine {
     private final Logger logger = LoggerFactory.getLogger(GameEngine.class);
 
     private final GameState castle;
+    private final GameService gameService;
     private final GameUI gameUI;
     private final GameConfig config;
 
     public GameEngine() {
         this.config = ConfigLoader.load();
         this.castle = new Castle(100, config);
+        this.gameService = new GameServiceImpl(castle);
 
         try {
-            this.gameUI = new LanternaUI(castle);
+            this.gameUI = new LanternaUI(gameService);
         } catch (IOException e) {
             logger.error("Не удалось инициализировать LanternaUI", e);
             throw new RuntimeException(e);

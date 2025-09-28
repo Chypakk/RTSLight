@@ -1,19 +1,9 @@
 package chypakk.model.game;
 
 import chypakk.config.*;
-import chypakk.model.building.Building;
 import chypakk.model.managers.*;
-import chypakk.model.resources.Resource;
-import chypakk.model.resources.ResourceType;
-import chypakk.model.resources.generator.ResourceGenerator;
-import chypakk.model.units.Unit;
 import chypakk.observer.GameObservable;
 import chypakk.observer.MessageNotifier;
-
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 //todo сделать тонким и ввести новую абстракцию между ui и логикой
 public interface GameState extends GameObservable, MessageNotifier {

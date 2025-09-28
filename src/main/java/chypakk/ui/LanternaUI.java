@@ -2,8 +2,8 @@ package chypakk.ui;
 
 import chypakk.composite.MenuSystem;
 import chypakk.config.*;
-import chypakk.model.game.GameState;
-import chypakk.model.resources.ResourceType;
+import chypakk.model.dto.GameObserverDTO;
+import chypakk.model.game.GameService;
 import chypakk.observer.event.*;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.graphics.TextGraphics;
@@ -30,12 +30,12 @@ public class LanternaUI implements GameUI {
     private final UiLayout uiLayout;
 
     private final MenuSystem menuSystem;
-    private final GameState castle;
+    private final GameService gameService;
 
-    public LanternaUI(GameState castle) throws IOException {
-        this.castle = castle;
-        this.menuSystem = new MenuSystem(castle, this);
-        castle.addObserver(this);
+    public LanternaUI(GameService gameService) throws IOException {
+        this.gameService = gameService;
+        this.menuSystem = new MenuSystem(gameService, this);
+        gameService.subscribeToEvents(this::handleGameEventDTO);
 
         screen = new TerminalScreen(new DefaultTerminalFactory()
                 .setInitialTerminalSize(new TerminalSize(WIDTH_SCREEN, HEIGHT_SCREEN))
@@ -47,6 +47,23 @@ public class LanternaUI implements GameUI {
         screen.setCursorPosition(null);
         graphics = screen.newTextGraphics();
         this.uiLayout = new UiLayout(screen);
+    }
+
+    private void handleGameEventDTO(GameObserverDTO event) {
+        try {
+            switch (event) {
+                case GameObserverDTO.Message msg -> displayMessage(msg.text());
+                case GameObserverDTO.ResourceChanged res -> updateResourcePanel();
+                case GameObserverDTO.BuildingAdded b -> updateBuildingPanel();
+                case GameObserverDTO.GeneratorAdded g -> updateGeneratorPanel();
+                case GameObserverDTO.GeneratorAlmostRemoved g -> updateGeneratorPanel();
+                case GameObserverDTO.UnitAdded u -> updateUnitPanel();
+
+                default -> throw new IllegalStateException("Unexpected value: " + event);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Ошибка обновления UI", e);
+        }
     }
 
     @Override
@@ -81,18 +98,18 @@ public class LanternaUI implements GameUI {
 
     @Override
     public void onEvent(GameEvent gameEvent) {
-        try {
-            switch (gameEvent) {
-                case ResourceEvent event -> updateResourcePanel();
-                case GeneratorEvent event -> updateGeneratorPanel();
-                case BuildingEvent event -> updateBuildingPanel();
-                case UnitEvent event -> updateUnitPanel();
-
-                default -> throw new IllegalStateException("Unexpected value: " + gameEvent);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            switch (gameEvent) {
+//                case ResourceEvent event -> updateResourcePanel();
+//                case GeneratorEvent event -> updateGeneratorPanel();
+//                case BuildingEvent event -> updateBuildingPanel();
+//                case UnitEvent event -> updateUnitPanel();
+//
+//                default -> throw new IllegalStateException("Unexpected value: " + gameEvent);
+//            }
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
 
     }
 
@@ -100,9 +117,9 @@ public class LanternaUI implements GameUI {
         uiLayout.renderItemList(
                 graphics,
                 UiRegion.UNIT_PANEL,
-                castle.getConfig().units(),
+                gameService.getConfig().units(),
                 UnitConfig::label,
-                config -> castle.getUnitManager().getUnits(config.label()).size(),
+                config -> gameService.getUnitCount(config.label()),
                 config -> 0
         );
     }
@@ -111,9 +128,9 @@ public class LanternaUI implements GameUI {
         uiLayout.renderItemList(
                 graphics,
                 UiRegion.BUILDING_PANEL,
-                castle.getConfig().buildings(),
+                gameService.getConfig().buildings(),
                 BuildingConfig::label,
-                config -> castle.getBuildingManager().haveBuilding(config.label())
+                config -> gameService.hasBuilding(config.label())
         );
     }
 
@@ -121,10 +138,10 @@ public class LanternaUI implements GameUI {
         uiLayout.renderItemList(
                 graphics,
                 UiRegion.GENERATOR_PANEL,
-                castle.getConfig().generators(),
+                gameService.getConfig().generators(),
                 GeneratorConfig::label,
-                config -> castle.getGeneratorManager().getGenerators(config.type()).size(),
-                config -> castle.getGeneratorManager().getAlmostRemovedCount(config.type())
+                config -> gameService.getGeneratorCount(config.type()),
+                config -> gameService.getGeneratorAlmostRemovedCount(config.type())
         );
     }
 
@@ -132,9 +149,9 @@ public class LanternaUI implements GameUI {
         uiLayout.renderItemList(
                 graphics,
                 UiRegion.RESOURCE_PANEL,
-                castle.getConfig().resources(),
+                gameService.getConfig().resources(),
                 ResourceConfig::label,
-                config -> castle.getResourceManager().getResource(ResourceType.fromType(config.type())),
+                config -> gameService.getResourceAmount(config.type()),
                 config -> 0
         );
     }
@@ -250,7 +267,7 @@ public class LanternaUI implements GameUI {
         int x = (int) (bounds.getX() + 2);
         int y = (int) (bounds.getY() + 1);
 
-        List<String> messages = castle.getGameLog().getMessages();
+        List<String> messages = gameService.getGameLogMessages();
         int maxLines = (int) bounds.getHeight() - 2;
         int startIndex = Math.max(0, messages.size() - maxLines);
 

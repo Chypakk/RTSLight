@@ -1,29 +1,23 @@
 package chypakk.composite;
 
-import chypakk.composite.command.GameCommand;
-import chypakk.model.game.GameState;
-
-import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class CommandLeaf implements MenuComponent{
     private final String title;
-    private final GameCommand command;
-    private final Predicate<GameState> visibilityCondition;
 
-    public CommandLeaf(String title, GameCommand command) {
-        this(title, command, castle -> true); // По умолчанию видим всегда
+    private final Runnable action;
+    private final Supplier<Boolean> visibilitySupplier;
+
+    public CommandLeaf(String title, Runnable action) {
+        this(title, action, () -> true);
     }
 
-    public CommandLeaf(String title, GameCommand command, Predicate<GameState> visibilityCondition) {
+    public CommandLeaf(String title, Runnable action, Supplier<Boolean> visibilitySupplier) {
         this.title = title;
-        this.command = command;
-        this.visibilityCondition = visibilityCondition;
+        this.action = action;
+        this.visibilitySupplier = visibilitySupplier;
     }
 
-    @Override
-    public void execute(GameState castle) {
-        command.execute(castle);
-    }
 
     @Override
     public String getTitle() {
@@ -31,7 +25,12 @@ public class CommandLeaf implements MenuComponent{
     }
 
     @Override
-    public boolean isVisible(GameState castle) {
-        return visibilityCondition.test(castle);
+    public void execute() {
+        action.run();
+    }
+
+    @Override
+    public boolean isVisible() {
+        return visibilitySupplier.get();
     }
 }

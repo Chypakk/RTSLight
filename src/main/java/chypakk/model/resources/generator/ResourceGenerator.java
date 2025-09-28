@@ -2,7 +2,6 @@ package chypakk.model.resources.generator;
 
 import chypakk.model.game.GameState;
 import chypakk.model.resources.Resource;
-import chypakk.model.resources.ResourcesBuilder;
 import chypakk.observer.event.Action;
 import chypakk.observer.event.GeneratorEvent;
 import org.slf4j.Logger;
